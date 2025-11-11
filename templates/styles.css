@@ -1,5 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #f9fafb;
+  --bg-hover: rgba(102, 126, 234, 0.1);
+  --bg-hover-active: rgba(102, 126, 234, 0.15);
+  --text-primary: #333;
+  --text-secondary: #666;
+  --border-color: #e0e0e0;
+  --border-color-light: #e5e7eb;
+  --code-bg: #fff;
+  --diff-separator-bg: #f9fafb;
+  --diff-separator-border: #e5e7eb;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #0d0d0d;
+  --bg-tertiary: #242424;
+  --bg-hover: rgba(102, 126, 234, 0.2);
+  --bg-hover-active: rgba(102, 126, 234, 0.3);
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --border-color: #333;
+  --border-color-light: #2a2a2a;
+  --code-bg: #1e1e1e;
+  --diff-separator-bg: #2a2a2a;
+  --diff-separator-border: #333;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,17 +41,74 @@
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
-  color: #333;
-  background: #f5f5f5;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
   padding: 1rem;
+  transition: background 0.3s, color 0.3s;
 }
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: var(--bg-primary);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header-content h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.theme-toggle {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  transform: scale(1.05);
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--text-primary);
+  transition: stroke 0.3s;
+}
+
+.theme-toggle .sun-icon {
+  display: none;
+}
+
+.theme-toggle .moon-icon {
+  display: block;
+}
+
+[data-theme="dark"] .theme-toggle .sun-icon {
+  display: block;
+}
+
+[data-theme="dark"] .theme-toggle .moon-icon {
+  display: none;
 }
 
 .header {
@@ -74,8 +163,9 @@ body {
 
 .config {
   padding: 1rem 2rem;
-  background: #f9fafb;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .config h2 {
@@ -85,7 +175,7 @@ body {
   color: #667eea;
   padding: 0.5rem;
   border-radius: 0.25rem;
-  background: rgba(102, 126, 234, 0.1);
+  background: var(--bg-hover);
   border: 1px solid rgba(102, 126, 234, 0.3);
   transition: background 0.2s, border-color 0.2s;
   display: flex;
@@ -94,7 +184,7 @@ body {
 }
 
 .config h2:hover {
-  background: rgba(102, 126, 234, 0.15);
+  background: var(--bg-hover-active);
   border-color: rgba(102, 126, 234, 0.4);
 }
 
@@ -131,26 +221,28 @@ body {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #666;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .config-value {
-  color: #333;
+  color: var(--text-primary);
   font-size: 13px;
+  transition: color 0.3s;
 }
 
 .config-value code,
 code.config-value {
-  background: #fff;
+  background: var(--code-bg);
   padding: 4px 8px;
   border-radius: 4px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
   font-size: 12px;
   font-stretch: condensed;
   word-break: break-all;
   overflow-wrap: break-word;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .command-line {
@@ -158,11 +250,11 @@ code.config-value {
 }
 
 .command-line code {
-  background: #fff;
+  background: var(--code-bg);
   padding: 12px;
   padding-right: 45px;
   border-radius: 4px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
   font-size: 12px;
   font-stretch: condensed;
@@ -170,6 +262,7 @@ code.config-value {
   word-break: break-all;
   overflow-wrap: break-word;
   line-height: 1.5;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .copy-button {
@@ -221,13 +314,13 @@ code.config-value {
 
 .filter-tab {
   padding: 0.75rem 1.25rem;
-  background: white;
-  border: 2px solid #e0e0e0;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
   border-radius: 0.5rem;
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #666;
+  color: var(--text-secondary);
   transition: all 0.2s;
   display: flex;
   flex-direction: column;
@@ -238,7 +331,7 @@ code.config-value {
 
 .filter-tab:hover {
   border-color: #667eea;
-  background: #f9fafb;
+  background: var(--bg-tertiary);
 }
 
 .filter-tab.active {
@@ -287,24 +380,26 @@ code.config-value {
 }
 
 .result-item {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   margin-bottom: 1rem;
   overflow: hidden;
-  transition: box-shadow 0.2s;
+  transition: all 0.3s;
+  background: var(--bg-primary);
 }
 
 .result-item:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px var(--shadow-color);
 }
 
 .result-header {
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: #fafafa;
+  background: var(--bg-tertiary);
   cursor: pointer;
   user-select: none;
+  transition: background 0.3s;
 }
 
 .result-item.passed .result-header {
@@ -330,7 +425,7 @@ code.config-value {
 .result-name {
   flex: 1;
   font-weight: 400;
-  color: #333;
+  color: var(--text-primary);
   font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
   font-size: 12px;
   font-stretch: condensed;
@@ -339,6 +434,7 @@ code.config-value {
   display: flex;
   align-items: baseline;
   gap: 10px;
+  transition: color 0.3s;
 }
 
 .result-method {
@@ -366,7 +462,8 @@ code.config-value {
   display: flex;
   gap: 15px;
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
+  transition: color 0.3s;
 }
 
 .status-code-ok {
@@ -380,7 +477,9 @@ code.config-value {
 .result-details {
   display: none;
   padding: 1rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .result-item.expanded .result-details {
@@ -403,13 +502,14 @@ code.config-value {
 }
 
 .url-display {
-  background: #f9fafb;
+  background: var(--bg-tertiary);
   padding: 0.625rem;
   border-radius: 0.25rem;
   font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
   font-size: 12px;
   font-stretch: condensed;
   word-break: break-all;
+  transition: background 0.3s;
 }
 
 .status-codes {
@@ -421,15 +521,17 @@ code.config-value {
 .status-box {
   padding: 0.75rem;
   border-radius: 0.375rem;
-  background: #f9fafb;
+  background: var(--bg-tertiary);
+  transition: background 0.3s;
 }
 
 .status-label {
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 0.25rem;
+  transition: color 0.3s;
 }
 
 .status-value {
@@ -447,22 +549,24 @@ code.config-value {
 .status-body-label {
   font-size: 0.6875rem;
   text-transform: uppercase;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 0.25rem;
+  transition: color 0.3s;
 }
 
 .status-body-content {
-  background: white;
+  background: var(--code-bg);
   padding: 0.625rem;
   border-radius: 0.25rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   font-family: 'Courier New', monospace;
   font-size: 0.75rem;
-  color: #333;
+  color: var(--text-primary);
   max-height: 18.75rem;
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-word;
+  transition: all 0.3s;
 }
 
 .differences {
@@ -475,7 +579,8 @@ code.config-value {
 .diff-item {
   margin-bottom: 0.75rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s;
 }
 
 .diff-item:last-child {
@@ -495,10 +600,11 @@ code.config-value {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0;
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--code-bg);
+  border: 1px solid var(--border-color-light);
   border-radius: 4px;
   overflow: hidden;
+  transition: all 0.3s;
 }
 
 .diff-view.full-width {
@@ -516,18 +622,19 @@ code.config-value {
 }
 
 .diff-side:first-child {
-  border-right: 1px solid #e5e7eb;
+  border-right: 1px solid var(--border-color-light);
 }
 
 .diff-side-header {
-  background: #f9fafb;
+  background: var(--diff-separator-bg);
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #666;
-  border-bottom: 1px solid #e5e7eb;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--diff-separator-border);
+  transition: all 0.3s;
 }
 
 .diff-content {
@@ -537,8 +644,9 @@ code.config-value {
   font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
   font-size: 12px;
   line-height: 1.5;
-  color: #333;
-  background: white;
+  color: var(--text-primary);
+  background: var(--code-bg);
+  transition: all 0.3s;
 }
 
 .diff-content code {
@@ -563,9 +671,10 @@ code.config-value {
   color: #9ca3af;
   user-select: none;
   font-size: 11px;
-  background: #f9fafb;
-  border-right: 1px solid #e5e7eb;
+  background: var(--diff-separator-bg);
+  border-right: 1px solid var(--diff-separator-border);
   margin-right: 8px;
+  transition: all 0.3s;
 }
 
 .diff-line-removed .diff-line-number {
@@ -594,10 +703,11 @@ code.config-value {
   padding: 8px 0;
   margin: 0;
   width: 100%;
-  background: #f9fafb;
-  border-top: 1px dashed #d1d5db;
-  border-bottom: 1px dashed #d1d5db;
+  background: var(--diff-separator-bg);
+  border-top: 1px dashed var(--border-color);
+  border-bottom: 1px dashed var(--border-color);
   user-select: none;
+  transition: all 0.3s;
 }
 
 .diff-line-added {
@@ -622,41 +732,46 @@ code.config-value {
 }
 
 .diff-value {
-  background: white;
+  background: var(--code-bg);
   padding: 0.625rem;
   border-radius: 0.25rem;
   border: 1px solid #fecaca;
+  transition: all 0.3s;
 }
 
 .diff-value-label {
   font-size: 0.6875rem;
   text-transform: uppercase;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 0.3125rem;
+  transition: color 0.3s;
 }
 
 .diff-value-content {
   font-family: 'Courier New', monospace;
   font-size: 0.75rem;
-  color: #333;
+  color: var(--text-primary);
   max-height: 12.5rem;
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-word;
+  transition: color 0.3s;
 }
 
 .no-results {
   text-align: center;
   padding: 3.75rem 1.25rem;
-  color: #999;
+  color: var(--text-secondary);
+  transition: color 0.3s;
 }
 
 .footer {
   padding: 1.25rem 2rem;
   text-align: center;
-  border-top: 1px solid #e0e0e0;
-  color: #666;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
   font-size: 0.875rem;
+  transition: all 0.3s;
 }
 
 .footer a {
