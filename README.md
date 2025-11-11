@@ -282,31 +282,6 @@ bun run start -- compare \
   --target-base-url https://api-next.example.com
 ```
 
-## Development
-
-Project structure:
-```
-src/
-├── index.ts          # Main entry point and action orchestration
-├── cli.ts            # Command-line argument parsing
-├── parser.ts         # Restfox file parser
-├── comparator.ts     # API comparison logic
-├── reporter.ts       # JSON report generation
-├── html-reporter.ts  # HTML report generation using Eta templates
-└── types.ts          # TypeScript type definitions
-
-templates/
-├── report.html       # Main HTML template
-├── header.html       # Header partial
-├── summary.html      # Summary cards partial
-├── config.html       # Configuration section partial
-├── results.html      # Results container partial
-├── result-item.html  # Individual result item partial
-├── footer.html       # Footer partial
-├── styles.css        # CSS styles
-└── scripts.js        # JavaScript for interactivity
-```
-
 ## Exit Codes
 
 - `0`: All comparisons passed
