@@ -1,0 +1,18 @@
+<% const passRate = it.report.summary.total > 0 
+  ? ((it.report.summary.passed / it.report.summary.total) * 100).toFixed(1)
+  : 0; %>
+
+<div class="summary">
+  <div class="summary-card total">
+    <div class="number"><%= it.report.summary.total %></div>
+    <div class="label">Total Requests</div>
+  </div>
+  <div class="summary-card passed">
+    <div class="number"><%= it.report.summary.passed %></div>
+    <div class="label">Passed (<%= passRate %>%)</div>
+  </div>
+  <div class="summary-card failed">
+    <div class="number"><%= it.report.summary.failed %></div>
+    <div class="label">Failed</div>
+  </div>
+</div>

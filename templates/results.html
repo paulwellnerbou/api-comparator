@@ -1,0 +1,28 @@
+<% const passRate = it.report.summary.total > 0 
+  ? ((it.report.summary.passed / it.report.summary.total) * 100).toFixed(1)
+  : 0; %>
+
+<div class="results">
+  <h2>Results</h2>
+  
+  <div class="filter-tabs">
+    <button class="filter-tab active" data-filter="all" onclick="filterResults('all')">
+      <span class="tab-number"><%= it.report.summary.total %></span>
+      <span class="tab-label">Total Requests</span>
+    </button>
+    <button class="filter-tab" data-filter="passed" onclick="filterResults('passed')">
+      <span class="tab-number"><%= it.report.summary.passed %></span>
+      <span class="tab-label">Passed (<%= passRate %>%)</span>
+    </button>
+    <button class="filter-tab" data-filter="failed" onclick="filterResults('failed')">
+      <span class="tab-number"><%= it.report.summary.failed %></span>
+      <span class="tab-label">Failed</span>
+    </button>
+  </div>
+  
+  <div id="results-container">
+    <% for (let i = 0; i < it.report.results.length; i++) { %>
+      <%~ await includeAsync('result-item.html', { result: it.report.results[i], index: i }) %>
+    <% } %>
+  </div>
+</div>

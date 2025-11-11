@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Comparison Report - <%= new Date(it.report.timestamp).toLocaleString() %></title>
+  <style>
+    <%~ await includeAsync('styles.css', it) %>
+  </style>
+</head>
+<body>
+  <div class="container">
+    <%~ await includeAsync('header.html', it) %>
+    <%~ await includeAsync('summary.html', it) %>
+    <%~ await includeAsync('config.html', it) %>
+    <%~ await includeAsync('results.html', it) %>
+    <%~ await includeAsync('footer.html', it) %>
+  </div>
+  <script>
+    <%~ await includeAsync('scripts.js', it) %>
+  </script>
+</body>
+</html>

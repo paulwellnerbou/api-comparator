@@ -1,0 +1,17 @@
+[
+  {
+    "url": "{{baseUrl}}/path/to/resource",
+    "method": "GET"
+  },
+  {
+    "url": "{{baseUrl}}/swagger-apidocs/v1",
+    "method": "GET"
+  },
+  {
+    "url": "{{baseUrl}}/path/to/another-resource",
+    "method": "POST",
+    "body": {
+      "key": "value"
+    }
+  }
+]

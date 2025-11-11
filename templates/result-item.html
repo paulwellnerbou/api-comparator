@@ -1,0 +1,145 @@
+<% const passed = it.result.differences.length === 0; %>
+<% const method = it.result.method || 'GET'; %>
+<% const displayUrl = it.result.url.replace('{{baseUrl}}', ''); %>
+<% const fullDisplayUrl = displayUrl; %>
+
+<div class="result-item <%= passed ? 'passed' : 'failed' %>" id="result-<%= it.index %>">
+  <div class="result-header" onclick="toggleResult(<%= it.index %>)">
+    <span class="result-status"><%= passed ? '✅' : '❌' %></span>
+    <div class="result-content">
+      <div class="result-name">
+        <span class="result-method method-<%= method %>"><%= method %></span>
+        <span class="url-text"><%= displayUrl %></span>
+      </div>
+      <div class="result-timing">
+        <span>Reference: <strong class="<%= (it.result.reference.statusCode === 0 || it.result.reference.statusCode >= 400) ? 'status-code-error' : 'status-code-ok' %>"><%= it.result.reference.statusCode %> <%= it.result.reference.statusText %></strong> / <%= it.result.reference.duration.toFixed(0) %>ms</span>
+        <span>Target: <strong class="<%= (it.result.target.statusCode === 0 || it.result.target.statusCode >= 400) ? 'status-code-error' : 'status-code-ok' %>"><%= it.result.target.statusCode %> <%= it.result.target.statusText %></strong> / <%= it.result.target.duration.toFixed(0) %>ms</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="result-details">
+    <% if (it.result.differences.length > 0) { %>
+      <div class="differences">
+        <% for (let j = 0; j < it.result.differences.length; j++) { 
+          const diff = it.result.differences[j]; %>
+          <div class="diff-item">
+            <div class="diff-message"><%= diff.message %></div>
+            <% if (diff.expected !== undefined && diff.type === 'body' && diff.diffBlocks) { %>
+              <div class="diff-view">
+                <div class="diff-side">
+                  <div class="diff-side-header">Expected (Reference)</div>
+                  <div class="diff-content">
+                    <code><%
+                      for (let blockIdx = 0; blockIdx < diff.diffBlocks.length; blockIdx++) {
+                        const block = diff.diffBlocks[blockIdx];
+                        if (block.skipped) {
+                          if (blockIdx > 0) { %><%= '\n' %><% }
+                          %><div class="diff-separator">⋯</div><%
+                        } else {
+                          for (let k = 0; k < block.lines.length; k++) {
+                            const alignedLine = block.lines[k];
+                            if (blockIdx > 0 || k > 0) { %><%= '\n' %><% }
+                            if (alignedLine.left) {
+                              const line = alignedLine.left;
+                              const lineNum = line.lineNumber || '';
+                              if (line.type === 'removed') { %><span class="diff-line diff-line-removed"><span class="diff-line-number"><%= lineNum %></span><%~ line.content %></span><%
+                              } else if (line.type === 'unchanged') { %><span class="diff-line"><span class="diff-line-number"><%= lineNum %></span><%~ line.content %></span><%
+                              }
+                            } else {
+                              // Empty placeholder for added lines
+                              %><span class="diff-line diff-line-empty"><span class="diff-line-number"></span> </span><%
+                            }
+                          }
+                        }
+                      }
+                    %></code>
+                  </div>
+                </div>
+                <div class="diff-side">
+                  <div class="diff-side-header">Actual (Target)</div>
+                  <div class="diff-content">
+                    <code><%
+                      for (let blockIdx = 0; blockIdx < diff.diffBlocks.length; blockIdx++) {
+                        const block = diff.diffBlocks[blockIdx];
+                        if (block.skipped) {
+                          if (blockIdx > 0) { %><%= '\n' %><% }
+                          %><div class="diff-separator">⋯</div><%
+                        } else {
+                          for (let k = 0; k < block.lines.length; k++) {
+                            const alignedLine = block.lines[k];
+                            if (blockIdx > 0 || k > 0) { %><%= '\n' %><% }
+                            if (alignedLine.right) {
+                              const line = alignedLine.right;
+                              const lineNum = line.lineNumber || '';
+                              if (line.type === 'added') { %><span class="diff-line diff-line-added"><span class="diff-line-number"><%= lineNum %></span><%~ line.content %></span><%
+                              } else if (line.type === 'unchanged') { %><span class="diff-line"><span class="diff-line-number"><%= lineNum %></span><%~ line.content %></span><%
+                              }
+                            } else {
+                              // Empty placeholder for removed lines
+                              %><span class="diff-line diff-line-empty"><span class="diff-line-number"></span> </span><%
+                            }
+                          }
+                        }
+                      }
+                    %></code>
+                  </div>
+                </div>
+              </div>
+            <% } else if (diff.expected !== undefined && diff.type === 'body') { %>
+              <% 
+                const expectedStr = typeof diff.expected === 'object' ? JSON.stringify(diff.expected, null, 2) : String(diff.expected);
+                const actualStr = typeof diff.actual === 'object' ? JSON.stringify(diff.actual, null, 2) : String(diff.actual);
+              %>
+              <div class="diff-view">
+                <div class="diff-side">
+                  <div class="diff-side-header">Expected (Reference)</div>
+                  <div class="diff-content"><code id="diff-expected-<%= it.index %>-<%= j %>"><%= expectedStr %></code></div>
+                </div>
+                <div class="diff-side">
+                  <div class="diff-side-header">Actual (Target)</div>
+                  <div class="diff-content"><code id="diff-actual-<%= it.index %>-<%= j %>"><%= actualStr %></code></div>
+                </div>
+              </div>
+            <% } else if (diff.expected !== undefined) { %>
+            <div class="diff-values">
+              <div class="diff-value">
+                <div class="diff-value-label">Expected (Reference)</div>
+                <div class="diff-value-content"><%= typeof diff.expected === 'object' ? JSON.stringify(diff.expected, null, 2) : String(diff.expected) %></div>
+              </div>
+              <div class="diff-value">
+                <div class="diff-value-label">Actual (Target)</div>
+                <div class="diff-value-content"><%= typeof diff.actual === 'object' ? JSON.stringify(diff.actual, null, 2) : String(diff.actual) %></div>
+              </div>
+            </div>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    <% } else { %>
+      <div class="no-differences">
+        <div class="diff-message">No differences</div>
+      </div>
+    <% } %>
+    
+    <% if (it.result.reference.error || it.result.target.error) { %>
+    <div class="detail-section">
+      <div class="detail-title">Errors</div>
+      <div class="differences">
+        <% if (it.result.reference.error) { %>
+          <div class="diff-item">
+            <div class="diff-message">Reference Error</div>
+            <div class="url-display"><%= it.result.reference.error %></div>
+          </div>
+        <% } %>
+        <% if (it.result.target.error) { %>
+          <div class="diff-item">
+            <div class="diff-message">Target Error</div>
+            <div class="url-display"><%= it.result.target.error %></div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>
