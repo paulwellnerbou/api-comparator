@@ -3,6 +3,14 @@ function toggleResult(index) {
   item.classList.toggle('expanded');
 }
 
+function toggleConfigSection(section) {
+  const content = document.getElementById(section + '-section');
+  const toggle = document.getElementById(section + '-toggle');
+  
+  content.classList.toggle('collapsed');
+  toggle.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
+}
+
 function filterResults(filter) {
   const items = document.querySelectorAll('.result-item');
   const tabs = document.querySelectorAll('.filter-tab');

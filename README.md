@@ -2,6 +2,8 @@
 
 A command-line tool built with Bun to compare API responses between reference and target environments. Perfect for testing API migrations, version upgrades, or comparing different deployment stages.
 
+![Screenshot](./doc/screenshot.png)
+
 ## Features
 
 - 🔍 Compare API responses between two environments
@@ -44,7 +46,7 @@ bun run dev -- compare \
 
 ### Using Restfox Export Format
 
-If you want to use Restfox export files, specify the type:
+If you want to use [Restfox](https://restfox.dev/) export files, specify the type:
 
 ```shell
 bun run dev -- compare \
