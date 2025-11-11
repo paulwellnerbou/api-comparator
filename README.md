@@ -29,6 +29,19 @@ bun run dev -- compare \
   --target-base-url https://api-next.example.com
 ```
 
+### With Custom Headers
+
+Add headers to all reference and/or target requests:
+
+```shell
+bun run dev -- compare \
+  --input-file example-requests.json \
+  --reference-base-url https://api-current.example.com \
+  --target-base-url https://api-next.example.com \
+  --reference-headers "API-Key: xyz123, User-Agent: TestApp" \
+  --target-headers "API-Key: abc456"
+```
+
 ### Using Restfox Export Format
 
 If you want to use Restfox export files, specify the type:
@@ -93,6 +106,8 @@ This generates `comparison-report-example-requests.json` and `comparison-report-
 | `--input-file-type <type>` | Type of input file: `generic` (default) or `restfox` | No |
 | `--reference-base-url <url>` | Base URL for the current/reference API | ✅ Yes |
 | `--target-base-url <url>` | Base URL for the next/target API | ✅ Yes |
+| `--reference-headers <headers>` | Headers to add to all reference requests (format: "Header1: value1, Header2: value2") | No |
+| `--target-headers <headers>` | Headers to add to all target requests (format: "Header1: value1, Header2: value2") | No |
 | `--limit <number>` | Limit the number of URLs to compare | No |
 | `--no-timestamp-in-report-filenames` | Omit timestamp from report filenames | No |
 | `--normalized-json-comparison` | Use normalized JSON comparison (ignore key order) | No (default: false/strict) |
@@ -141,6 +156,8 @@ A simple JSON array of request objects:
 - `body` (optional): Request body as a string
 - `headers` (optional): Object with header key-value pairs
 - `name` (optional): Display name for the request (defaults to URL)
+
+**Note:** Headers specified in the input file are merged with command-line headers (`--reference-headers` and `--target-headers`). Command-line headers take precedence if there's a conflict.
 
 ### 2. Restfox Export Format
 

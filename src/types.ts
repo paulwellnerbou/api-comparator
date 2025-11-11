@@ -129,6 +129,8 @@ export interface CliOptions {
   inputFileType?: "generic" | "restfox";
   referenceBaseUrl?: string;
   targetBaseUrl?: string;
+  referenceHeaders?: Record<string, string>;
+  targetHeaders?: Record<string, string>;
   limit?: number;
   noTimestampInReportFilenames?: boolean;
   normalizedJsonComparison?: boolean;

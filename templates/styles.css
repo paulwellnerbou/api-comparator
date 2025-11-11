@@ -471,10 +471,18 @@ code.config-value {
   overflow: hidden;
 }
 
+.diff-view.full-width {
+  grid-template-columns: 1fr;
+}
+
 .diff-side {
   display: flex;
   flex-direction: column;
   min-width: 0;
+}
+
+.diff-view.full-width .diff-side:first-child {
+  border-right: none;
 }
 
 .diff-side:first-child {

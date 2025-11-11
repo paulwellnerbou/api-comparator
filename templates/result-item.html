@@ -119,6 +119,14 @@
     <% } else { %>
       <div class="no-differences">
         <div class="diff-message">No differences</div>
+        <% if ((it.result.reference.statusCode === 0 || it.result.reference.statusCode >= 400) && it.result.reference.body !== undefined && it.result.reference.body !== null) { %>
+          <div class="diff-view full-width">
+            <div class="diff-side">
+              <div class="diff-side-header">Response Body</div>
+              <div class="diff-content"><code><%= typeof it.result.reference.body === 'object' ? JSON.stringify(it.result.reference.body, null, 2) : String(it.result.reference.body) %></code></div>
+            </div>
+          </div>
+        <% } %>
       </div>
     <% } %>
     

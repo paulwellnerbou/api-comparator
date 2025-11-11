@@ -41,7 +41,8 @@ function getStatusText(statusCode: number): string {
 export async function makeRequest(
   request: GenericRequest,
   baseUrl: string,
-  headerReplacements: Record<string, string> = {}
+  headerReplacements: Record<string, string> = {},
+  additionalHeaders: Record<string, string> = {}
 ): Promise<ApiResponse> {
   const url = replaceBaseUrl(request.url, baseUrl);
   const method = request.method || "GET";
@@ -50,6 +51,9 @@ export async function makeRequest(
   if (request.headers) {
     headers = replaceHeaderPlaceholders(request.headers, headerReplacements);
   }
+  
+  // Merge additional headers (from command line)
+  headers = { ...headers, ...additionalHeaders };
   
   const startTime = performance.now();
 
@@ -128,7 +132,7 @@ export function compareResponses(
     if (useNormalizedComparison) {
       // Use deep equality comparison (normalized, ignores key order)
       if (!equal(reference.body, target.body)) {
-        const diffBlocks = calculateDiff(reference.body, target.body);
+        const diffBlocks = calculateDiff(reference.body, target.body, true);
         differences.push({
           type: "body",
           message: "Response body differs (normalized comparison)",
@@ -142,7 +146,7 @@ export function compareResponses(
       const refString = JSON.stringify(reference.body);
       const targetString = JSON.stringify(target.body);
       if (refString !== targetString) {
-        const diffBlocks = calculateDiff(reference.body, target.body);
+        const diffBlocks = calculateDiff(reference.body, target.body, false);
         differences.push({
           type: "body",
           message: "Response body differs (strict comparison)",
@@ -155,7 +159,7 @@ export function compareResponses(
   } else if (!isReferenceJson && !isTargetJson) {
     // Both are strings - use direct string comparison
     if (reference.body !== target.body) {
-      const diffBlocks = calculateDiff(reference.body, target.body);
+      const diffBlocks = calculateDiff(reference.body, target.body, false);
       differences.push({
         type: "body",
         message: "Response body differs (string comparison)",
@@ -166,7 +170,7 @@ export function compareResponses(
     }
   } else {
     // Mixed types - one is JSON, other is string
-    const diffBlocks = calculateDiff(reference.body, target.body);
+    const diffBlocks = calculateDiff(reference.body, target.body, false);
     differences.push({
       type: "body",
       message: `Response body type mismatch: reference is ${isReferenceJson ? "JSON" : "string"}, target is ${isTargetJson ? "JSON" : "string"}`,
@@ -201,15 +205,48 @@ export function normalizeJson(data: unknown): unknown {
 }
 
 /**
+ * Sort JSON object keys recursively for normalized comparison
+ */
+function sortJsonKeys(obj: unknown): unknown {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(item => sortJsonKeys(item));
+  }
+  
+  if (typeof obj === 'object') {
+    const sorted: Record<string, unknown> = {};
+    const keys = Object.keys(obj as Record<string, unknown>).sort();
+    for (const key of keys) {
+      sorted[key] = sortJsonKeys((obj as Record<string, unknown>)[key]);
+    }
+    return sorted;
+  }
+  
+  return obj;
+}
+
+/**
  * Calculate diff lines between two values with proper alignment
  */
-function calculateDiff(expected: unknown, actual: unknown): DiffBlock[] {
-  const expectedStr = typeof expected === "string" 
-    ? expected 
-    : JSON.stringify(expected, null, 2);
-  const actualStr = typeof actual === "string" 
-    ? actual 
-    : JSON.stringify(actual, null, 2);
+function calculateDiff(expected: unknown, actual: unknown, useNormalizedComparison: boolean = false): DiffBlock[] {
+  let expectedStr: string;
+  let actualStr: string;
+  
+  if (useNormalizedComparison && typeof expected === "object" && typeof actual === "object") {
+    // Sort keys for normalized comparison
+    expectedStr = JSON.stringify(sortJsonKeys(expected), null, 2);
+    actualStr = JSON.stringify(sortJsonKeys(actual), null, 2);
+  } else {
+    expectedStr = typeof expected === "string" 
+      ? expected 
+      : JSON.stringify(expected, null, 2);
+    actualStr = typeof actual === "string" 
+      ? actual 
+      : JSON.stringify(actual, null, 2);
+  }
 
   const diff = diffLines(expectedStr, actualStr);
   

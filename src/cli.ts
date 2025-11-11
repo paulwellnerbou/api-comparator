@@ -1,6 +1,36 @@
 import type { CliOptions } from "./types";
 
 /**
+ * Parse headers from command line string format "Header1: value1, Header2: value2"
+ */
+function parseHeaders(headerString: string): Record<string, string> {
+  const headers: Record<string, string> = {};
+  
+  // Split by comma to get individual headers
+  const headerPairs = headerString.split(',').map(h => h.trim());
+  
+  for (const pair of headerPairs) {
+    const colonIndex = pair.indexOf(':');
+    if (colonIndex === -1) {
+      console.error(`Error: Invalid header format '${pair}'. Expected 'Header: value'`);
+      process.exit(1);
+    }
+    
+    const name = pair.substring(0, colonIndex).trim();
+    const value = pair.substring(colonIndex + 1).trim();
+    
+    if (!name) {
+      console.error(`Error: Empty header name in '${pair}'`);
+      process.exit(1);
+    }
+    
+    headers[name] = value;
+  }
+  
+  return headers;
+}
+
+/**
  * Parse command line arguments
  */
 export function parseArgs(args: string[]): CliOptions {
@@ -50,6 +80,12 @@ export function parseArgs(args: string[]): CliOptions {
         break;
       case "--target-base-url":
         options.targetBaseUrl = args[++i];
+        break;
+      case "--reference-headers":
+        options.referenceHeaders = parseHeaders(args[++i]);
+        break;
+      case "--target-headers":
+        options.targetHeaders = parseHeaders(args[++i]);
         break;
       case "--limit":
         options.limit = parseInt(args[++i], 10);
@@ -117,6 +153,8 @@ Options for 'compare':
   --input-file-type <type>         Type of input file: 'generic' or 'restfox' (default: generic)
   --reference-base-url <url>       Base URL for the reference/current API (required)
   --target-base-url <url>          Base URL for the target/next API (required)
+  --reference-headers <headers>    Headers to add to all reference requests (format: "Header1: value1, Header2: value2")
+  --target-headers <headers>       Headers to add to all target requests (format: "Header1: value1, Header2: value2")
   --limit <number>                 Limit the number of URLs to compare
   --no-timestamp-in-report-filenames   Omit timestamp from report filenames
   --normalized-json-comparison     Use normalized JSON comparison (ignore key order)
@@ -134,6 +172,14 @@ Examples:
     --reference-base-url https://api-current.example.com \\
     --target-base-url https://api-next.example.com \\
     --limit 10
+
+  # Compare with custom headers
+  api-comparator compare \\
+    --input-file requests.json \\
+    --reference-base-url https://api-current.example.com \\
+    --target-base-url https://api-next.example.com \\
+    --reference-headers "API-Key: xyz123, User-Agent: MyApp" \\
+    --target-headers "API-Key: abc456"
 
   # Compare without timestamp in filenames
   api-comparator compare \

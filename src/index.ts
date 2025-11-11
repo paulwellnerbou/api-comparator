@@ -26,6 +26,12 @@ async function runCompare(options: any) {
   console.log(`  Input file type:   ${options.inputFileType}`);
   console.log(`  Reference URL:     ${options.referenceBaseUrl}`);
   console.log(`  Target URL:        ${options.targetBaseUrl}`);
+  if (options.referenceHeaders && Object.keys(options.referenceHeaders).length > 0) {
+    console.log(`  Reference headers: ${JSON.stringify(options.referenceHeaders)}`);
+  }
+  if (options.targetHeaders && Object.keys(options.targetHeaders).length > 0) {
+    console.log(`  Target headers:    ${JSON.stringify(options.targetHeaders)}`);
+  }
   if (options.limit) {
     console.log(`  Limit:             ${options.limit}`);
   }
@@ -63,8 +69,18 @@ async function runCompare(options: any) {
 
     // Make requests sequentially to avoid backend conflicts
     // (both APIs might share the same backend)
-    const referenceResponse = await makeRequest(request, options.referenceBaseUrl);
-    const targetResponse = await makeRequest(request, options.targetBaseUrl);
+    const referenceResponse = await makeRequest(
+      request, 
+      options.referenceBaseUrl, 
+      {},
+      options.referenceHeaders || {}
+    );
+    const targetResponse = await makeRequest(
+      request, 
+      options.targetBaseUrl,
+      {},
+      options.targetHeaders || {}
+    );
 
     // Compare the responses
     const differences = compareResponses(
@@ -87,14 +103,14 @@ async function runCompare(options: any) {
       reference: {
         statusCode: referenceResponse.statusCode,
         statusText: referenceResponse.statusText,
-        body: referenceResponse.statusCode !== 200 ? referenceResponse.body : undefined,
+        body: referenceResponse.body,
         duration: referenceResponse.duration,
         error: referenceResponse.error,
       },
       target: {
         statusCode: targetResponse.statusCode,
         statusText: targetResponse.statusText,
-        body: targetResponse.statusCode !== 200 ? targetResponse.body : undefined,
+        body: targetResponse.body,
         duration: targetResponse.duration,
         error: targetResponse.error,
       },
