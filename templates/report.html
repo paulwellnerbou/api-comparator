@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Comparison Report - <%= new Date(it.report.timestamp).toLocaleString() %></title>
+  <title>API Comparison Report - <%= new Date(it.report.timestamp).toISOString() %></title>
   <style>
     <%~ await includeAsync('styles.css', it) %>
   </style>
