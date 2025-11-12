@@ -29,6 +29,7 @@
   "author": "Paul Wellner Bou <paul@wellnerbou.de>",
   "license": "MIT",
   "devDependencies": {
+    "@release-it/conventional-changelog": "^10.0.1",
     "@types/bun": "latest",
     "release-it": "^19.0.6"
   },

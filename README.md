@@ -295,6 +295,7 @@ This project uses [release-it](https://github.com/release-it/release-it) for aut
 
 ```bash
 # Patch release (1.0.0 -> 1.0.1)
+export GITHUB_TOKEN=$(gh auth token)
 bun run release
 
 # Minor release (1.0.0 -> 1.1.0)
@@ -304,9 +305,25 @@ bun run release:minor
 bun run release:major
 ```
 
-The release script will create a git tag, push to GitHub, create a GitHub Release, and automatically bump to the next development version.
+The release script will create a git tag, push to GitHub, create a GitHub Release with assets (binary, JavaScript bundle, templates), and automatically bump to the next development version.
 
-**Prerequisites:** GitHub authentication via `GITHUB_TOKEN` environment variable, GitHub CLI (`gh auth login`), or SSH keys.
+**Prerequisites:** 
+
+1. GitHub authentication - authenticate with GitHub CLI:
+   ```bash
+   gh auth login
+   ```
+
+2. Set the GitHub token environment variable:
+   ```bash
+   export GITHUB_TOKEN=$(gh auth token)
+   ```
+   
+   Or add it to your shell profile permanently:
+   ```bash
+   echo 'export GITHUB_TOKEN=$(gh auth token)' >> ~/.zshrc
+   source ~/.zshrc
+   ```
 
 ## License
 
