@@ -1,6 +1,6 @@
 {
   "name": "api-comparator",
-  "version": "1.0.0-dev.0",
+  "version": "1.0.0",
   "description": "CLI tool to compare API responses between reference and target environments",
   "repository": {
     "type": "git",
@@ -20,7 +20,12 @@
     "release:minor": "release-it minor",
     "release:major": "release-it major"
   },
-  "keywords": ["api", "testing", "comparison", "restfox"],
+  "keywords": [
+    "api",
+    "testing",
+    "comparison",
+    "restfox"
+  ],
   "author": "Paul Wellner Bou <paul@wellnerbou.de>",
   "license": "MIT",
   "devDependencies": {
