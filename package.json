@@ -13,6 +13,7 @@
   },
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target node --format esm",
+    "build:bin": "bun build --compile --minify --sourcemap src/index.ts --outfile dist/api-comparator",
     "dev": "bun run src/index.ts",
     "start": "bun run dist/index.js",
     "release": "release-it",
