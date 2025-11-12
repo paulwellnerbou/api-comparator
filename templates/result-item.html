@@ -118,7 +118,7 @@
       </div>
     <% } else { %>
       <div class="no-differences">
-        <div class="diff-message">No differences</div>
+        <div class="diff-message">✅ No differences</div>
         <% if ((it.result.reference.statusCode === 0 || it.result.reference.statusCode >= 400) && it.result.reference.body !== undefined && it.result.reference.body !== null) { %>
           <div class="diff-view full-width">
             <div class="diff-side">
@@ -132,7 +132,7 @@
     
     <% if (it.result.reference.error || it.result.target.error) { %>
     <div class="detail-section">
-      <div class="detail-title">Errors</div>
+      <div class="detail-title">❌ Errors</div>
       <div class="differences">
         <% if (it.result.reference.error) { %>
           <div class="diff-item">
