@@ -49,7 +49,7 @@ body {
   max-width: 1400px;
   margin: 0 auto;
   background: var(--bg-primary);
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px var(--shadow-color);
   transition: background 0.3s, box-shadow 0.3s;
@@ -59,7 +59,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .header-content h1 {
@@ -112,7 +112,7 @@ body {
 .header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 1rem 2rem;
+  padding: 1rem 1.5rem;
   border-radius: 0.5rem 0.5rem 0 0;
 }
 
@@ -160,7 +160,7 @@ body {
 }
 
 .config {
-  padding: 1rem 2rem;
+  padding: 1rem 1.5rem;
   background: var(--bg-tertiary);
   border-bottom: 1px solid var(--border-color);
   transition: background 0.3s, border-color 0.3s;
@@ -294,7 +294,7 @@ code.config-value {
 }
 
 .results {
-  padding: 1rem 2rem;
+  padding: 1rem 1.5rem;
 }
 
 .results h2 {
@@ -800,7 +800,7 @@ code.config-value {
 }
 
 .footer {
-  padding: 1.25rem 2rem;
+  padding: 1.25rem 1.5rem;
   text-align: center;
   border-top: 1px solid var(--border-color);
   color: var(--text-secondary);
