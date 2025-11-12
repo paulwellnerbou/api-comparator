@@ -817,3 +817,28 @@ code.config-value {
   color: #5568d3;
   text-decoration: underline;
 }
+
+/* Dark mode overrides for purple/blue title colors */
+[data-theme="dark"] .config h2 {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .results h2 {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .detail-title {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .diff-message {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .footer a {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .footer a:hover {
+  color: #a5b4ff;
+}
