@@ -221,12 +221,26 @@ body {
   letter-spacing: 0.5px;
   color: var(--text-secondary);
   white-space: nowrap;
+  align-self: center;
 }
 
 .config-value {
   color: var(--text-primary);
   font-size: 13px;
   transition: color 0.3s;
+  align-self: center;
+}
+
+.input-file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.input-file-row .config-value {
+  flex: 1;
+  min-width: 0;
 }
 
 .config-value code,
@@ -241,6 +255,35 @@ code.config-value {
   word-break: break-all;
   overflow-wrap: break-word;
   transition: background 0.3s, border-color 0.3s;
+}
+
+.download-input-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.download-input-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.download-input-btn:active {
+  transform: translateY(0);
+}
+
+.download-input-btn svg {
+  flex-shrink: 0;
 }
 
 .command-line {
@@ -297,11 +340,50 @@ code.config-value {
   padding: 1rem 1.5rem;
 }
 
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .results h2 {
   font-size: 1rem;
   font-weight: 500;
-  margin-bottom: 1rem;
+  margin: 0;
   color: #667eea;
+}
+
+[data-theme="dark"] .results h2 {
+  color: #8b9dff;
+}
+
+.download-json-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.download-json-btn:hover {
+  background: #5568d3;
+  transform: translateY(-1px);
+}
+
+.download-json-btn:active {
+  transform: translateY(0);
+}
+
+.download-json-btn svg {
+  flex-shrink: 0;
 }
 
 .filter-tabs {

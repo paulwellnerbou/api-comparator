@@ -129,6 +129,7 @@ async function runCompare(options: any) {
     timestamp: new Date().toISOString(),
     commandLine,
     options,
+    inputRequests: requests,  // Include the input requests in generic format
     summary: {
       total: results.length,
       passed: results.filter((r) => r.differences.length === 0).length,

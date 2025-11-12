@@ -143,6 +143,7 @@ export interface ComparisonReport {
   timestamp: string;
   commandLine: string;
   options: CliOptions;
+  inputRequests: GenericRequest[];  // Store the input requests in generic format
   summary: {
     total: number;
     passed: number;

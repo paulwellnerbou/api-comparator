@@ -69,3 +69,31 @@ function toggleTheme() {
   document.documentElement.setAttribute('data-theme', savedTheme);
 })();
 
+// Embedded JSON report data
+const reportData = <%~ JSON.stringify(it.report) %>;
+
+function downloadJson() {
+  const dataStr = JSON.stringify(reportData, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'comparison-report-' + new Date(reportData.timestamp).toISOString().split('T')[0] + '.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function downloadInputJson() {
+  const dataStr = JSON.stringify(reportData.inputRequests, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'input-requests-' + new Date(reportData.timestamp).toISOString().split('T')[0] + '.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
