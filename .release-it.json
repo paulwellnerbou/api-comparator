@@ -8,14 +8,14 @@
   "github": {
     "release": true,
     "releaseName": "Release v${version}",
-    "assets": ["dist/api-comparator", "dist/index.js", "templates/*", "package.json", "DISTRIBUTION.md", "LICENSE"],
+    "assets": ["api-comparator-v${version}.zip"],
     "tokenRef": "GITHUB_TOKEN"
   },
   "npm": {
     "publish": false
   },
   "hooks": {
-    "before:release": "bun run build && bun run build:bin",
-    "after:release": "echo 'Bumping to next dev version' && npm version prerelease --preid=dev --no-git-tag-version && git add package.json && git commit -m 'Bump to next dev version [skip ci]' && git push"
+    "before:release": "bun run build && bun run build:bin && zip -r api-comparator-v${version}.zip dist templates package.json DISTRIBUTION.md LICENSE",
+    "after:release": "rm -f api-comparator-v*.zip && echo 'Bumping to next dev version' && npm version prerelease --preid=dev --no-git-tag-version && git add package.json && git commit -m 'Bump to next dev version [skip ci]' && git push"
   }
 }
