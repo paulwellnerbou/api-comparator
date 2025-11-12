@@ -1,6 +1,6 @@
 {
   "name": "api-comparator",
-  "version": "1.0.0",
+  "version": "1.0.0-dev.0",
   "description": "CLI tool to compare API responses between reference and target environments",
   "repository": {
     "type": "git",
@@ -14,13 +14,17 @@
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target node --format esm",
     "dev": "bun run src/index.ts",
-    "start": "bun run dist/index.js"
+    "start": "bun run dist/index.js",
+    "release": "release-it",
+    "release:minor": "release-it minor",
+    "release:major": "release-it major"
   },
   "keywords": ["api", "testing", "comparison", "restfox"],
   "author": "Paul Wellner Bou <paul@wellnerbou.de>",
   "license": "MIT",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "release-it": "^19.0.6"
   },
   "dependencies": {
     "diff": "^8.0.2",

@@ -1,0 +1,19 @@
+{
+  "git": {
+    "commitMessage": "Release v${version}",
+    "tagName": "v${version}",
+    "requireCleanWorkingDir": true,
+    "requireBranch": "main"
+  },
+  "github": {
+    "release": true,
+    "releaseName": "Release v${version}"
+  },
+  "npm": {
+    "publish": false
+  },
+  "hooks": {
+    "after:bump": "git add package.json && git commit --amend --no-edit",
+    "after:release": "echo 'Bumping to next dev version' && npm version prerelease --preid=dev --no-git-tag-version && git add package.json && git commit -m 'Bump to next dev version [skip ci]' && git push"
+  }
+}

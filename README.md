@@ -289,6 +289,25 @@ bun run start -- compare \
 
 This makes the tool suitable for CI/CD pipelines.
 
+## Creating a Release
+
+This project uses [release-it](https://github.com/release-it/release-it) for automated releases.
+
+```bash
+# Patch release (1.0.0 -> 1.0.1)
+bun run release
+
+# Minor release (1.0.0 -> 1.1.0)
+bun run release:minor
+
+# Major release (1.0.0 -> 2.0.0)
+bun run release:major
+```
+
+The release script will create a git tag, push to GitHub, create a GitHub Release, and automatically bump to the next development version.
+
+**Prerequisites:** GitHub authentication via `GITHUB_TOKEN` environment variable, GitHub CLI (`gh auth login`), or SSH keys.
+
 ## License
 
 MIT
@@ -300,5 +319,3 @@ The HTML reports are generated using [**Eta**](https://eta.js.org/) - a lightwei
 - **Partials**: Reusable components (header, footer, result items)
 - **Styles**: Separated CSS file for easy customization
 - **Scripts**: JavaScript for interactive features
-
-This makes it easy to customize the HTML report appearance and behavior without touching the TypeScript code.
