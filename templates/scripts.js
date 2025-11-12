@@ -16,7 +16,12 @@ function filterResults(filter) {
   const tabs = document.querySelectorAll('.filter-tab');
   
   tabs.forEach(tab => tab.classList.remove('active'));
-  event.target.classList.add('active');
+  
+  // Find the correct tab button by filter attribute
+  const activeTab = document.querySelector(`.filter-tab[data-filter="${filter}"]`);
+  if (activeTab) {
+    activeTab.classList.add('active');
+  }
   
   items.forEach(item => {
     if (filter === 'all') {

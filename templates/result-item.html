@@ -136,13 +136,13 @@
       <div class="differences">
         <% if (it.result.reference.error) { %>
           <div class="diff-item">
-            <div class="diff-message">Reference Error</div>
+            <div class="error-subtitle">Reference Error</div>
             <div class="url-display"><%= it.result.reference.error %></div>
           </div>
         <% } %>
         <% if (it.result.target.error) { %>
           <div class="diff-item">
-            <div class="diff-message">Target Error</div>
+            <div class="error-subtitle">Target Error</div>
             <div class="url-display"><%= it.result.target.error %></div>
           </div>
         <% } %>
