@@ -19,7 +19,8 @@
   </div>
   
   <div class="result-details">
-    <% if (it.result.differences.length > 0) { %>
+    <div class="result-details-content">
+      <% if (it.result.differences.length > 0) { %>
       <div class="differences">
         <% for (let j = 0; j < it.result.differences.length; j++) { 
           const diff = it.result.differences[j]; %>
@@ -131,23 +132,22 @@
     <% } %>
     
     <% if (it.result.reference.error || it.result.target.error) { %>
-    <div class="detail-section">
+    <div class="differences errors-section">
       <div class="detail-title">❌ Errors</div>
-      <div class="differences">
-        <% if (it.result.reference.error) { %>
-          <div class="diff-item">
-            <div class="error-subtitle">Reference Error</div>
-            <div class="url-display"><%= it.result.reference.error %></div>
-          </div>
-        <% } %>
-        <% if (it.result.target.error) { %>
-          <div class="diff-item">
-            <div class="error-subtitle">Target Error</div>
-            <div class="url-display"><%= it.result.target.error %></div>
-          </div>
-        <% } %>
-      </div>
+      <% if (it.result.reference.error) { %>
+        <div class="diff-item">
+          <div class="error-subtitle">Reference Error</div>
+          <div class="url-display"><%= it.result.reference.error %></div>
+        </div>
+      <% } %>
+      <% if (it.result.target.error) { %>
+        <div class="diff-item">
+          <div class="error-subtitle">Target Error</div>
+          <div class="url-display"><%= it.result.target.error %></div>
+        </div>
+      <% } %>
     </div>
     <% } %>
+    </div>
   </div>
 </div>
