@@ -34,9 +34,11 @@ function filterResults(filter) {
   });
 }
 
-function copyCommandLine() {
+function copyCommandLine(event) {
   const commandText = document.getElementById('command-line-text').textContent;
+  
   navigator.clipboard.writeText(commandText).then(() => {
+    console.log('✅ Copy successful!');
     const button = event.target.closest('.copy-button');
     const originalHTML = button.innerHTML;
     
@@ -50,7 +52,7 @@ function copyCommandLine() {
       button.style.background = '#667eea';
     }, 2000);
   }).catch(err => {
-    console.error('Failed to copy:', err);
+    console.error('❌ Error:', err);
   });
 }
 
