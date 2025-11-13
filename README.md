@@ -54,32 +54,6 @@ bun run dev -- report \
 
 The HTML report will be generated in the same directory as the JSON file with the same filename (just `.html` extension instead of `.json`).
 
-### With Limit
-
-To test only a subset of requests:
-
-```shell
-bun run dev -- compare \
-  --input-file example-requests.json \
-  --reference-base-url https://api-current.example.com \
-  --target-base-url https://api-next.example.com \
-  --limit 1
-```
-
-### Without Timestamp in Filenames
-
-To generate reports with predictable filenames (useful for automation/scripting):
-
-```shell
-bun run dev -- compare \
-  --input-file example-requests.json \
-  --reference-base-url https://api-current.example.com \
-  --target-base-url https://api-next.example.com \
-  --no-timestamp-in-report-filenames
-```
-
-This generates `comparison-report-example-requests.json` and `comparison-report-example-requests.html` instead of timestamped filenames.
-
 ### Command Actions
 
 | Action | Description |
@@ -211,23 +185,16 @@ Example Restfox export structure:
 }
 ```
 
-## Output
+## Reports
 
 ### Reports Generated
 
 The `compare` action generates **two reports**:
 
 1. **JSON Report** - Machine-readable detailed comparison data
-2. **HTML Report** - Beautiful, interactive visual report
+2. **HTML Report** - Static, self-contained, beautiful, interactive visual report
 
-By default, both reports are timestamped (e.g., `comparison-report-Restfox_2025-11-11-2025-11-11T10-30-45-123Z.json` and `.html`). Use `--no-timestamp-in-report-filenames` to generate reports without timestamps for easier automation.
-
-### Console Output
-
-The tool provides:
-- Progress indicator showing which request is being processed
-- Summary with total, passed, and failed requests
-- List of failed requests with their differences
+By default, both reports are timestamped (e.g., `comparison-report-Restfox_2025-11-11-2025-11-11T10-30-45-123Z.json` and `.html`). Use `--no-timestamp-in-report-filenames` to generate reports without timestamps in file names.
 
 ### JSON Report
 
@@ -250,6 +217,7 @@ Simply open the HTML file in any browser to view the interactive report.
 The tool compares the following aspects:
 
 ### 1. Status Code
+
 Direct comparison of HTTP status codes between reference and target responses.
 
 ### 2. Response Body
@@ -319,32 +287,10 @@ bun run release:major
 
 The release script will create a git tag, push to GitHub, create a GitHub Release with assets (binary, JavaScript bundle, templates), and automatically bump to the next development version.
 
-**Prerequisites:** 
-
-1. GitHub authentication - authenticate with GitHub CLI:
-   ```bash
-   gh auth login
-   ```
-
-2. Set the GitHub token environment variable:
-   ```bash
-   export GITHUB_TOKEN=$(gh auth token)
-   ```
-   
-   Or add it to your shell profile permanently:
-   ```bash
-   echo 'export GITHUB_TOKEN=$(gh auth token)' >> ~/.zshrc
-   source ~/.zshrc
-   ```
-
 ## License
 
 MIT
 
 ## Template Engine
 
-The HTML reports are generated using [**Eta**](https://eta.js.org/) - a lightweight, fast, and TypeScript-native template engine. Templates are located in the `templates/` directory and are organized into:
-
-- **Partials**: Reusable components (header, footer, result items)
-- **Styles**: Separated CSS file for easy customization
-- **Scripts**: JavaScript for interactive features
+The HTML reports are generated using [**Eta**](https://eta.js.org/). Templates are located in the `templates/` directory.
