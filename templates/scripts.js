@@ -1,4 +1,10 @@
 function toggleResult(index) {
+  // Don't toggle if user is selecting text
+  const selection = window.getSelection();
+  if (selection && selection.toString().length > 0) {
+    return;
+  }
+  
   const item = document.getElementById('result-' + index);
   item.classList.toggle('expanded');
 }
@@ -28,6 +34,8 @@ function filterResults(filter) {
       item.style.display = 'block';
     } else if (filter === 'passed') {
       item.style.display = item.classList.contains('passed') ? 'block' : 'none';
+    } else if (filter === 'passed-with-errors') {
+      item.style.display = item.classList.contains('passed-with-errors') ? 'block' : 'none';
     } else if (filter === 'failed') {
       item.style.display = item.classList.contains('failed') ? 'block' : 'none';
     }

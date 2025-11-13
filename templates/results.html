@@ -1,6 +1,13 @@
-<% const passRate = it.report.summary.total > 0 
-  ? ((it.report.summary.passed / it.report.summary.total) * 100).toFixed(1)
-  : 0; %>
+<% 
+const total = it.report.results.length;
+const passed = it.report.results.filter((r) => r.differences.length === 0).length;
+const failed = it.report.results.filter((r) => r.differences.length > 0).length;
+const passedWithErrors = it.report.results.filter((r) => 
+  r.differences.length === 0 && 
+  (r.reference.statusCode >= 400 || r.target.statusCode >= 400)
+).length;
+const passRate = total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
+%>
 
 <div class="results">
   <div class="results-header">
@@ -17,15 +24,19 @@
   
   <div class="filter-tabs">
     <button class="filter-tab active" data-filter="all" onclick="filterResults('all')">
-      <span class="tab-number"><%= it.report.summary.total %></span>
+      <span class="tab-number"><%= total %></span>
       <span class="tab-label">Total Requests</span>
     </button>
     <button class="filter-tab" data-filter="passed" onclick="filterResults('passed')">
-      <span class="tab-number"><%= it.report.summary.passed %></span>
+      <span class="tab-number"><%= passed %></span>
       <span class="tab-label">Passed (<%= passRate %>%)</span>
     </button>
+    <button class="filter-tab" data-filter="passed-with-errors" onclick="filterResults('passed-with-errors')">
+      <span class="tab-number"><%= passedWithErrors %></span>
+      <span class="tab-label">Passed with Errors</span>
+    </button>
     <button class="filter-tab" data-filter="failed" onclick="filterResults('failed')">
-      <span class="tab-number"><%= it.report.summary.failed %></span>
+      <span class="tab-number"><%= failed %></span>
       <span class="tab-label">Failed</span>
     </button>
   </div>

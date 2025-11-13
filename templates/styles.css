@@ -128,38 +128,6 @@ body {
   font-weight: 100;
 }
 
-.summary {
-  display: none;
-}
-
-.summary-card {
-  display: none;
-}
-
-.summary-card.total {
-  display: none;
-}
-
-.summary-card.passed {
-  display: none;
-}
-
-.summary-card.failed {
-  display: none;
-}
-
-.summary-card .number {
-  display: none;
-}
-
-.summary-card.total .number { display: none; }
-.summary-card.passed .number { display: none; }
-.summary-card.failed .number { display: none; }
-
-.summary-card .label {
-  display: none;
-}
-
 .config {
   padding: 1rem 1.5rem;
   background: var(--bg-tertiary);
@@ -437,6 +405,11 @@ code.config-value {
   background: #f0fdf4;
 }
 
+.filter-tab[data-filter="passed-with-errors"].active {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
 .filter-tab[data-filter="failed"].active {
   border-color: #ef4444;
   background: #fef2f2;
@@ -457,6 +430,11 @@ code.config-value {
   background: #1a4d3a;
 }
 
+[data-theme="dark"] .filter-tab[data-filter="passed-with-errors"].active {
+  border-color: #f59e0b;
+  background: #4a3518;
+}
+
 [data-theme="dark"] .filter-tab[data-filter="failed"].active {
   border-color: #ef4444;
   background: #5a2828;
@@ -474,6 +452,10 @@ code.config-value {
 
 .filter-tab[data-filter="passed"] .tab-number {
   color: #10b981;
+}
+
+.filter-tab[data-filter="passed-with-errors"] .tab-number {
+  color: #f59e0b;
 }
 
 .filter-tab[data-filter="failed"] .tab-number {
@@ -566,6 +548,8 @@ code.config-value {
 .url-text {
   flex: 1;
   min-width: 0;
+  user-select: text;
+  cursor: text;
 }
 
 .method-GET { background: #dbeafe; color: #1e40af; }
@@ -815,21 +799,29 @@ code.config-value {
   font-size: 12px;
   line-height: 1.5;
   color: var(--text-primary);
-  background: var(--code-bg);
   transition: all 0.3s;
 }
 
 .diff-content code {
   font-family: inherit;
-  background: none;
+  background: var(--code-bg);
   padding: 0;
+  display: inline-block;
+  min-width: 100%;
+  transition: background 0.3s;
+}
+
+/* Add padding for simple code displays without diff lines */
+.diff-content code:not(:has(.diff-line)) {
+  padding: 12px;
 }
 
 .diff-line {
   display: block;
   padding: 0 4px 0 0;
   margin: 0;
-  width: 100%;
+  min-width: 100%;
+  width: fit-content;
   white-space: pre;
 }
 
@@ -872,7 +864,8 @@ code.config-value {
   font-size: 18px;
   padding: 8px 0;
   margin: 0;
-  width: 100%;
+  min-width: 100%;
+  width: fit-content;
   background: var(--diff-separator-bg);
   border-top: 1px dashed var(--border-color);
   border-bottom: 1px dashed var(--border-color);

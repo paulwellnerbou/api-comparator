@@ -138,11 +138,6 @@ async function runCompare(options: any) {
     commandLine,
     options,
     inputRequests: requests,  // Include the input requests in generic format
-    summary: {
-      total: results.length,
-      passed: results.filter((r) => r.differences.length === 0).length,
-      failed: results.filter((r) => r.differences.length > 0).length,
-    },
     results,
   };
 
@@ -188,7 +183,8 @@ async function runCompare(options: any) {
   printSummary(report);
 
   // Exit with appropriate code
-  process.exit(report.summary.failed > 0 ? 1 : 0);
+  const failedCount = report.results.filter((r) => r.differences.length > 0).length;
+  process.exit(failedCount > 0 ? 1 : 0);
 }
 
 async function runReport(options: any) {
