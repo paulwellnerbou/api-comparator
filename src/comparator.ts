@@ -42,9 +42,21 @@ export async function makeRequest(
   request: GenericRequest,
   baseUrl: string,
   headerReplacements: Record<string, string> = {},
-  additionalHeaders: Record<string, string> = {}
+  additionalHeaders: Record<string, string> = {},
+  urlType: 'reference' | 'target' = 'reference'
 ): Promise<ApiResponse> {
-  const url = replaceBaseUrl(request.url, baseUrl);
+  // Determine which URL to use: referenceUrl/targetUrl if specified, otherwise use url with baseUrl replacement
+  let url: string;
+  if (urlType === 'reference' && request.referenceUrl) {
+    url = replaceBaseUrl(request.referenceUrl, baseUrl);
+  } else if (urlType === 'target' && request.targetUrl) {
+    url = replaceBaseUrl(request.targetUrl, baseUrl);
+  } else if (request.url) {
+    url = replaceBaseUrl(request.url, baseUrl);
+  } else {
+    throw new Error('No URL specified in request');
+  }
+  
   const method = request.method || "GET";
   
   let headers: Record<string, string> = {};

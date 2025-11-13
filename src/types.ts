@@ -2,7 +2,9 @@
  * Generic request format (default)
  */
 export interface GenericRequest {
-  url: string;
+  url?: string;
+  referenceUrl?: string;
+  targetUrl?: string;
   method?: string;
   body?: string;
   headers?: Record<string, string>;
@@ -77,6 +79,8 @@ export interface ComparisonResult {
   name: string;
   method: string;
   url: string;
+  referenceUrl?: string;
+  targetUrl?: string;
   referenceBaseUrl: string;
   targetBaseUrl: string;
   reference: {
@@ -134,6 +138,8 @@ export interface CliOptions {
   limit?: number;
   noTimestampInReportFilenames?: boolean;
   normalizedJsonComparison?: boolean;
+  outputFile?: string;
+  outputDir?: string;
 }
 
 /**

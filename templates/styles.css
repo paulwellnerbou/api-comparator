@@ -773,6 +773,10 @@ code.config-value {
   transition: all 0.3s;
 }
 
+.no-differences .diff-view {
+  margin-bottom: 1rem;
+}
+
 .diff-view.full-width {
   grid-template-columns: 1fr;
 }

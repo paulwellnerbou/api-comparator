@@ -1,6 +1,10 @@
 <% const passed = it.result.differences.length === 0; %>
 <% const method = it.result.method || 'GET'; %>
 <% const displayUrl = it.result.url.replace('{{baseUrl}}', ''); %>
+<% const hasSpecificUrls = it.result.referenceUrl && it.result.targetUrl; %>
+<% const urlsDiffer = hasSpecificUrls && it.result.referenceUrl !== it.result.targetUrl; %>
+<% const displayReferenceUrl = it.result.referenceUrl ? it.result.referenceUrl.replace('{{baseUrl}}', '') : ''; %>
+<% const displayTargetUrl = it.result.targetUrl ? it.result.targetUrl.replace('{{baseUrl}}', '') : ''; %>
 <% const fullDisplayUrl = displayUrl; %>
 
 <div class="result-item <%= passed ? 'passed' : 'failed' %>" id="result-<%= it.index %>">
@@ -9,7 +13,16 @@
     <div class="result-content">
       <div class="result-name">
         <span class="result-method method-<%= method %>"><%= method %></span>
-        <span class="url-text"><%= displayUrl %></span>
+        <% if (urlsDiffer) { %>
+          <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+            <span class="url-text"><span style="font-weight: 400; min-width: 75px; display: inline-block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;">Reference:</span><%= displayReferenceUrl %></span>
+            <span class="url-text"><span style="font-weight: 400; min-width: 75px; display: inline-block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;">Target:</span><%= displayTargetUrl %></span>
+          </div>
+        <% } else if (hasSpecificUrls) { %>
+          <span class="url-text"><%= displayReferenceUrl %></span>
+        <% } else { %>
+          <span class="url-text"><%= displayUrl %></span>
+        <% } %>
       </div>
       <div class="result-timing">
         <span>Reference: <strong class="<%= (it.result.reference.statusCode === 0 || it.result.reference.statusCode >= 400) ? 'status-code-error' : 'status-code-ok' %>"><%= it.result.reference.statusCode %> <%= it.result.reference.statusText %></strong> / <%= it.result.reference.duration.toFixed(0) %>ms</span>

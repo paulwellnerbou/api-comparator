@@ -65,6 +65,8 @@ bun run dev -- report \
   --input-file comparison-report-example-requests.json
 ```
 
+The HTML report will be generated in the same directory as the JSON file with the same filename (just `.html` extension instead of `.json`).
+
 ### With Limit
 
 To test only a subset of requests:
@@ -111,6 +113,8 @@ This generates `comparison-report-example-requests.json` and `comparison-report-
 | `--reference-headers <headers>` | Headers to add to all reference requests (format: "Header1: value1, Header2: value2") | No |
 | `--target-headers <headers>` | Headers to add to all target requests (format: "Header1: value1, Header2: value2") | No |
 | `--limit <number>` | Limit the number of URLs to compare | No |
+| `--output-file <file>` | Output filename for reports (without extension) | No |
+| `--output-dir <dir>` | Output directory for reports (default: current directory) | No |
 | `--no-timestamp-in-report-filenames` | Omit timestamp from report filenames | No |
 | `--normalized-json-comparison` | Use normalized JSON comparison (ignore key order) | No (default: false/strict) |
 
@@ -119,6 +123,8 @@ This generates `comparison-report-example-requests.json` and `comparison-report-
 | Option | Description | Required |
 |--------|-------------|----------|
 | `--input-file <file>` | Path to the JSON comparison report | ✅ Yes |
+| `--output-file <file>` | Output filename for HTML report (with or without .html extension) | No |
+| `--output-dir <dir>` | Output directory for HTML report (default: same as input file) | No |
 
 **General options:**
 
@@ -153,11 +159,30 @@ A simple JSON array of request objects:
 ```
 
 **Fields:**
-- `url` (required): The full URL to request
+- `url` (optional): The full URL to request
+- `referenceUrl` (optional): Specific URL for the reference environment
+- `targetUrl` (optional): Specific URL for the target environment
 - `method` (optional): HTTP method (default: GET)
 - `body` (optional): Request body as a string
 - `headers` (optional): Object with header key-value pairs
 - `name` (optional): Display name for the request (defaults to URL)
+
+**URL Handling:**
+- The `{{baseUrl}}` placeholder is replaced with the respective base URLs in all URL fields (`url`, `referenceUrl`, `targetUrl`)
+- If `referenceUrl` and `targetUrl` are provided, they are used for the respective environments
+- If only `url` is provided, it's used for both environments with the respective base URL replacements
+
+**Example with different URLs per environment:**
+```json
+[
+  {
+    "name": "Get User Profile",
+    "method": "GET",
+    "referenceUrl": "{{baseUrl}}/users/1",
+    "targetUrl": "{{baseUrl}}/users/2"
+  }
+]
+```
 
 **Note:** Headers specified in the input file are merged with command-line headers (`--reference-headers` and `--target-headers`). Command-line headers take precedence if there's a conflict.
 

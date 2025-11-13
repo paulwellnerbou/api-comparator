@@ -96,6 +96,12 @@ export function parseArgs(args: string[]): CliOptions {
       case "--normalized-json-comparison":
         options.normalizedJsonComparison = true;
         break;
+      case "--output-file":
+        options.outputFile = args[++i];
+        break;
+      case "--output-dir":
+        options.outputDir = args[++i];
+        break;
       case "--help":
       case "-h":
         printHelp();
@@ -156,11 +162,15 @@ Options for 'compare':
   --reference-headers <headers>    Headers to add to all reference requests (format: "Header1: value1, Header2: value2")
   --target-headers <headers>       Headers to add to all target requests (format: "Header1: value1, Header2: value2")
   --limit <number>                 Limit the number of URLs to compare
+  --output-file <file>             Output filename for reports (without extension)
+  --output-dir <dir>               Output directory for reports (default: current directory)
   --no-timestamp-in-report-filenames   Omit timestamp from report filenames
   --normalized-json-comparison     Use normalized JSON comparison (ignore key order)
 
 Options for 'report':
   --input-file <file>              Path to the JSON comparison report (required)
+  --output-file <file>             Output filename for HTML report (with or without .html extension)
+  --output-dir <dir>               Output directory for HTML report (default: same as input file)
 
 General Options:
   --help, -h                       Show this help message

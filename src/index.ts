@@ -60,7 +60,7 @@ async function runCompare(options: any) {
 
   for (const request of requests) {
     completed++;
-    const url = request.url;
+    const url = request.url || request.referenceUrl || request.targetUrl || '';
     const progressText = `[${completed}/${requests.length}] ${url}`;
     // Clear line completely by padding to the length of the previous line
     const padding = ' '.repeat(Math.max(0, lastLineLength - progressText.length));
@@ -73,13 +73,15 @@ async function runCompare(options: any) {
       request, 
       options.referenceBaseUrl, 
       {},
-      options.referenceHeaders || {}
+      options.referenceHeaders || {},
+      'reference'
     );
     const targetResponse = await makeRequest(
       request, 
       options.targetBaseUrl,
       {},
-      options.targetHeaders || {}
+      options.targetHeaders || {},
+      'target'
     );
 
     // Compare the responses
@@ -93,11 +95,17 @@ async function runCompare(options: any) {
     const name = request.name || url;
     const method = request.method || "GET";
 
+    // Determine actual URLs used
+    const referenceUrl = request.referenceUrl;
+    const targetUrl = request.targetUrl;
+
     // Store the result
     results.push({
       name,
       method,
       url,
+      referenceUrl,
+      targetUrl,
       referenceBaseUrl: options.referenceBaseUrl,
       targetBaseUrl: options.targetBaseUrl,
       reference: {
@@ -141,16 +149,39 @@ async function runCompare(options: any) {
   // Save JSON report to file
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   const inputFileName = options.inputFile.split('/').pop()?.replace(/\.[^/.]+$/, '') || 'report';
-  const baseFileName = `comparison-report-${inputFileName}`;
-  const jsonOutputPath = options.noTimestampInReportFilenames 
-    ? `${baseFileName}.json`
-    : `${baseFileName}-${timestamp}.json`;
+  
+  let jsonOutputPath: string;
+  let htmlOutputPath: string;
+  
+  if (options.outputFile) {
+    // User specified output file - use it as base name
+    const outputBase = options.outputFile.replace(/\.(json|html)$/, '');
+    const outputDir = options.outputDir || '.';
+    jsonOutputPath = `${outputDir}/${outputBase}.json`;
+    htmlOutputPath = `${outputDir}/${outputBase}.html`;
+  } else if (options.outputDir) {
+    // User specified only output dir
+    const baseFileName = `comparison-report-${inputFileName}`;
+    jsonOutputPath = options.noTimestampInReportFilenames 
+      ? `${options.outputDir}/${baseFileName}.json`
+      : `${options.outputDir}/${baseFileName}-${timestamp}.json`;
+    htmlOutputPath = options.noTimestampInReportFilenames
+      ? `${options.outputDir}/${baseFileName}.html`
+      : `${options.outputDir}/${baseFileName}-${timestamp}.html`;
+  } else {
+    // No output options specified - use default behavior
+    const baseFileName = `comparison-report-${inputFileName}`;
+    jsonOutputPath = options.noTimestampInReportFilenames 
+      ? `${baseFileName}.json`
+      : `${baseFileName}-${timestamp}.json`;
+    htmlOutputPath = options.noTimestampInReportFilenames
+      ? `${baseFileName}.html`
+      : `${baseFileName}-${timestamp}.html`;
+  }
+  
   await generateReport(report, jsonOutputPath);
 
-  // Generate HTML report
-  const htmlOutputPath = options.noTimestampInReportFilenames
-    ? `${baseFileName}.html`
-    : `${baseFileName}-${timestamp}.html`;
+  // Generate HTML report - always use the same name as JSON, just different extension
   await generateHtmlReport(report, htmlOutputPath);
 
   // Print summary to console
@@ -169,10 +200,27 @@ async function runReport(options: any) {
   const content = await file.text();
   const report: ComparisonReport = JSON.parse(content);
 
-  // Generate HTML report with source filename
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const inputFileName = options.inputFile.split('/').pop()?.replace(/\.[^/.]+$/, '') || 'report';
-  const htmlOutputPath = `${inputFileName}-${timestamp}.html`;
+  // Generate HTML report
+  let htmlOutputPath: string;
+  
+  if (options.outputFile) {
+    // User specified output file
+    const outputFileName = options.outputFile.endsWith('.html') 
+      ? options.outputFile 
+      : `${options.outputFile}.html`;
+    const outputDir = options.outputDir || '.';
+    htmlOutputPath = `${outputDir}/${outputFileName}`;
+  } else {
+    // Match the JSON filename exactly, but with .html extension
+    // and use the same directory as the JSON file
+    const inputPath = options.inputFile;
+    const lastSlashIndex = inputPath.lastIndexOf('/');
+    const inputDir = options.outputDir || (lastSlashIndex >= 0 ? inputPath.substring(0, lastSlashIndex) : '.');
+    const inputFileName = lastSlashIndex >= 0 ? inputPath.substring(lastSlashIndex + 1) : inputPath;
+    const baseFileName = inputFileName.replace(/\.json$/, '');
+    htmlOutputPath = `${inputDir}/${baseFileName}.html`;
+  }
+  
   await generateHtmlReport(report, htmlOutputPath);
 
   console.log("\n✓ HTML report generated successfully");
