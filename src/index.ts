@@ -99,6 +99,11 @@ async function runCompare(options: any) {
     const referenceUrl = request.referenceUrl;
     const targetUrl = request.targetUrl;
 
+    // Collect request headers and body
+    const referenceRequestHeaders = { ...request.headers, ...(options.referenceHeaders || {}) };
+    const targetRequestHeaders = { ...request.headers, ...(options.targetHeaders || {}) };
+    const requestBody = request.body;
+
     // Store the result
     results.push({
       name,
@@ -108,6 +113,9 @@ async function runCompare(options: any) {
       targetUrl,
       referenceBaseUrl: options.referenceBaseUrl,
       targetBaseUrl: options.targetBaseUrl,
+      referenceRequestHeaders,
+      targetRequestHeaders,
+      requestBody,
       reference: {
         statusCode: referenceResponse.statusCode,
         statusText: referenceResponse.statusText,

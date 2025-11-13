@@ -64,6 +64,27 @@ function copyCommandLine(event) {
   });
 }
 
+function copyCurlCommand(event, curlId) {
+  const curlText = document.getElementById('curl-' + curlId).value;
+  
+  navigator.clipboard.writeText(curlText).then(() => {
+    const button = event.target.closest('.copy-curl-btn');
+    const originalHTML = button.innerHTML;
+    
+    // Show checkmark
+    button.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 4L6 11.5L2.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied!';
+    button.style.background = '#10b981';
+    
+    // Reset after 2 seconds
+    setTimeout(() => {
+      button.innerHTML = originalHTML;
+      button.style.background = '#667eea';
+    }, 2000);
+  }).catch(err => {
+    console.error('❌ Error:', err);
+  });
+}
+
 function toggleTheme() {
   const html = document.documentElement;
   const currentTheme = html.getAttribute('data-theme');

@@ -34,6 +34,113 @@
   
   <div class="result-details">
     <div class="result-details-content">
+      
+      <%
+      // Build full URLs
+      const refUrl = it.result.referenceUrl 
+        ? it.result.referenceBaseUrl + it.result.referenceUrl.replace('{{baseUrl}}', '')
+        : it.result.referenceBaseUrl + it.result.url.replace('{{baseUrl}}', '');
+      const targetUrl = it.result.targetUrl
+        ? it.result.targetBaseUrl + it.result.targetUrl.replace('{{baseUrl}}', '')
+        : it.result.targetBaseUrl + it.result.url.replace('{{baseUrl}}', '');
+      
+      // Build curl commands
+      function buildCurlCommand(url, method, headers, body) {
+        let curl = `curl -X ${method} '${url}'`;
+        if (headers && Object.keys(headers).length > 0) {
+          for (const [key, value] of Object.entries(headers)) {
+            curl += ` \\\n  -H '${key}: ${value}'`;
+          }
+        }
+        if (body && method !== 'GET' && method !== 'HEAD') {
+          const bodyStr = typeof body === 'object' ? JSON.stringify(body) : String(body);
+          curl += ` \\\n  -d '${bodyStr.replace(/'/g, "'\\''")}'`;
+        }
+        return curl;
+      }
+      
+      const refCurl = buildCurlCommand(refUrl, method, it.result.referenceRequestHeaders, it.result.requestBody);
+      const targetCurl = buildCurlCommand(targetUrl, method, it.result.targetRequestHeaders, it.result.requestBody);
+      %>
+      
+      <div class="request-details">
+        <div class="request-details-side">
+          <div class="request-details-header">
+            <span class="request-details-title">Reference Request</span>
+            <button class="copy-curl-btn" onclick="copyCurlCommand(event, 'ref-<%= it.index %>')" title="Copy as cURL">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy cURL
+            </button>
+            <textarea id="curl-ref-<%= it.index %>" style="display: none;"><%= refCurl %></textarea>
+          </div>
+          <div class="request-detail-item">
+            <div class="request-detail-label">URL:</div>
+            <code class="request-detail-value"><%= refUrl %></code>
+          </div>
+          <% if (it.result.referenceRequestHeaders && Object.keys(it.result.referenceRequestHeaders).length > 0) { %>
+          <div class="request-detail-item">
+            <div class="request-detail-label">Headers:</div>
+            <code class="request-detail-value request-headers"><%
+              const headerEntries = Object.entries(it.result.referenceRequestHeaders);
+              for (let i = 0; i < headerEntries.length; i++) {
+                const [key, value] = headerEntries[i];
+                if (i > 0) { %><%= '\n' %><% }
+                %><%= key %>: <%= value %><%
+              }
+            %></code>
+          </div>
+          <% } %>
+          
+          <% if (it.result.requestBody) { %>
+          <div class="request-detail-item">
+            <div class="request-detail-label">Body:</div>
+            <code class="request-detail-value request-body"><%= typeof it.result.requestBody === 'string' ? it.result.requestBody : JSON.stringify(it.result.requestBody, null, 2) %></code>
+          </div>
+          <% } %>
+        </div>
+        
+        <div class="request-details-side">
+          <div class="request-details-header">
+            <span class="request-details-title">Target Request</span>
+            <button class="copy-curl-btn" onclick="copyCurlCommand(event, 'target-<%= it.index %>')" title="Copy as cURL">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy cURL
+            </button>
+            <textarea id="curl-target-<%= it.index %>" style="display: none;"><%= targetCurl %></textarea>
+          </div>
+          <div class="request-detail-item">
+            <div class="request-detail-label">URL:</div>
+            <code class="request-detail-value"><%= targetUrl %></code>
+          </div>
+          <% if (it.result.targetRequestHeaders && Object.keys(it.result.targetRequestHeaders).length > 0) { %>
+          <div class="request-detail-item">
+            <div class="request-detail-label">Headers:</div>
+            <code class="request-detail-value request-headers"><%
+              const targetHeaderEntries = Object.entries(it.result.targetRequestHeaders);
+              for (let i = 0; i < targetHeaderEntries.length; i++) {
+                const [key, value] = targetHeaderEntries[i];
+                if (i > 0) { %><%= '\n' %><% }
+                %><%= key %>: <%= value %><%
+              }
+            %></code>
+          </div>
+          <% } %>
+          
+          <% if (it.result.requestBody) { %>
+          <div class="request-detail-item">
+            <div class="request-detail-label">Body:</div>
+            <code class="request-detail-value request-body"><%= typeof it.result.requestBody === 'string' ? it.result.requestBody : JSON.stringify(it.result.requestBody, null, 2) %></code>
+          </div>
+          <% } %>
+        </div>
+      </div>
+      
       <% if (it.result.differences.length > 0) { %>
       <div class="differences">
         <% for (let j = 0; j < it.result.differences.length; j++) { 

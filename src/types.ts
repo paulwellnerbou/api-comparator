@@ -83,12 +83,16 @@ export interface ComparisonResult {
   targetUrl?: string;
   referenceBaseUrl: string;
   targetBaseUrl: string;
+  referenceRequestHeaders?: Record<string, string>;
+  targetRequestHeaders?: Record<string, string>;
+  requestBody?: unknown;
   reference: {
     statusCode: number;
     statusText: string;
     body?: unknown;
     duration: number;
     error?: string;
+    headers?: Record<string, string>;
   };
   target: {
     statusCode: number;
@@ -96,6 +100,7 @@ export interface ComparisonResult {
     body?: unknown;
     duration: number;
     error?: string;
+    headers?: Record<string, string>;
   };
   differences: Difference[];
 }
