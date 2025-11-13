@@ -62,13 +62,12 @@ function toggleTheme() {
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
   
   html.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
 }
 
-// Initialize theme on page load
+// Initialize theme on page load based on system preference
 (function() {
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', savedTheme);
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
 })();
 
 // Embedded JSON report data

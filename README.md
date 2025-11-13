@@ -10,7 +10,8 @@ A command-line tool built with Bun to compare API responses between reference an
 - 📊 Status code comparison
 - 📝 Normalized JSON body comparison
 - ⏱️ Response time tracking
-- 📄 Detailed JSON static HTML report generation
+- 📄 Detailed JSON and static, self-contained HTML report generation with diff-view of changed response content
+- 🌓 Dark mode support in HTML reports
 - 📋 Support input files in generic JSON format (default) and [Restfox](https://restfox.dev/) export format
 
 ## Installation
