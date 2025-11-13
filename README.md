@@ -10,9 +10,8 @@ A command-line tool built with Bun to compare API responses between reference an
 - 📊 Status code comparison
 - 📝 Normalized JSON body comparison
 - ⏱️ Response time tracking
-- 📄 Detailed JSON report generation
-- 🎯 Optional request limiting for quick tests
-- 📋 Support for generic JSON format (default) and Restfox export format
+- 📄 Detailed JSON static HTML report generation
+- 📋 Support input files in generic JSON format (default) and [Restfox](https://restfox.dev/) export format
 
 ## Installation
 
@@ -42,18 +41,6 @@ bun run dev -- compare \
   --target-base-url https://api-next.example.com \
   --reference-headers "API-Key: xyz123, User-Agent: TestApp" \
   --target-headers "API-Key: abc456"
-```
-
-### Using Restfox Export Format
-
-If you want to use [Restfox](https://restfox.dev/) export files, specify the type:
-
-```shell
-bun run dev -- compare \
-  --input-file Restfox_2025-11-11.json \
-  --input-file-type restfox \
-  --reference-base-url https://api-current.example.com \
-  --target-base-url https://api-next.example.com
 ```
 
 ### Generate HTML Report from JSON
@@ -186,9 +173,9 @@ A simple JSON array of request objects:
 
 **Note:** Headers specified in the input file are merged with command-line headers (`--reference-headers` and `--target-headers`). Command-line headers take precedence if there's a conflict.
 
-### 2. Restfox Export Format
+### 2. [Restfox](https://restfox.dev/) Export Format
 
-Use `--input-file-type restfox` to parse Restfox export files. The tool reads the exported JSON file and extracts all HTTP requests with the following:
+Use `--input-file-type restfox` to parse [Restfox](https://restfox.dev/) export files. The tool reads the exported JSON file and extracts all HTTP requests with the following:
 
 - Request method (GET, POST, PUT, PATCH, DELETE, etc.)
 - URL with `{{baseUrl}}` placeholder support
