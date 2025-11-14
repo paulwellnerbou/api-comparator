@@ -1,7 +1,7 @@
 import equal from "fast-deep-equal";
 import { diffLines } from "diff";
 import type { ApiResponse, Difference, DiffLine, DiffBlock, GenericRequest } from "./types";
-import { replaceBaseUrl, replaceHeaderPlaceholders } from "./parser";
+import { replaceBaseUrl, replaceHeaderPlaceholders, replaceVariables, replaceVariablesInBody } from "./parser";
 
 /**
  * Get standard HTTP status text for a status code
@@ -41,6 +41,7 @@ function getStatusText(statusCode: number): string {
 export async function makeRequest(
   request: GenericRequest,
   baseUrl: string,
+  variables: Record<string, any> = {},
   headerReplacements: Record<string, string> = {},
   additionalHeaders: Record<string, string> = {},
   urlType: 'reference' | 'target' = 'reference'
@@ -57,6 +58,9 @@ export async function makeRequest(
     throw new Error('No URL specified in request');
   }
   
+  // Replace variables in URL
+  url = replaceVariables(url, variables);
+  
   const method = request.method || "GET";
   
   let headers: Record<string, string> = {};
@@ -64,21 +68,28 @@ export async function makeRequest(
     headers = replaceHeaderPlaceholders(request.headers, headerReplacements);
   }
   
-  // Merge additional headers (from command line)
+  // Merge additional headers (from command line and configuration)
   headers = { ...headers, ...additionalHeaders };
+  
+  // Replace variables in header values
+  for (const [key, value] of Object.entries(headers)) {
+    headers[key] = replaceVariables(value, variables);
+  }
   
   const startTime = performance.now();
 
   try {
     // Prepare request body if present
     let requestBody: string | undefined;
-    if (request.body) {
+    let bodyToSend = replaceVariablesInBody(request.body, variables);
+    
+    if (bodyToSend) {
       // If body is already a string, use it as-is
       // If body is an object, stringify it and set Content-Type header
-      if (typeof request.body === 'string') {
-        requestBody = request.body;
+      if (typeof bodyToSend === 'string') {
+        requestBody = bodyToSend;
       } else {
-        requestBody = JSON.stringify(request.body);
+        requestBody = JSON.stringify(bodyToSend);
         // Set Content-Type header if not already present
         if (!headers['Content-Type'] && !headers['content-type']) {
           headers['Content-Type'] = 'application/json';

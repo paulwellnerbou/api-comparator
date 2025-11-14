@@ -12,6 +12,42 @@ export interface GenericRequest {
 }
 
 /**
+ * Configuration for reference or target environment
+ */
+export interface EnvironmentConfiguration {
+  variables?: Record<string, any>;
+  headers?: Record<string, string>;
+}
+
+/**
+ * Top-level configuration for requests file
+ */
+export interface RequestFileConfiguration {
+  variables?: Record<string, any>;
+  headers?: Record<string, string>;
+  referenceConfiguration?: EnvironmentConfiguration;
+  targetConfiguration?: EnvironmentConfiguration;
+}
+
+/**
+ * New structured format for request files
+ */
+export interface StructuredRequestFile {
+  configuration?: RequestFileConfiguration;
+  requests: GenericRequest[];
+}
+
+/**
+ * Parsed configuration with merged values
+ */
+export interface ParsedConfiguration {
+  referenceVariables: Record<string, any>;
+  targetVariables: Record<string, any>;
+  referenceHeaders: Record<string, string>;
+  targetHeaders: Record<string, string>;
+}
+
+/**
  * Restfox export format types
  */
 export interface RestfoxExport {

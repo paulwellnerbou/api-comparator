@@ -1,17 +1,52 @@
-[
-  {
-    "url": "{{baseUrl}}/path/to/resource",
-    "method": "GET"
-  },
-  {
-    "url": "{{baseUrl}}/swagger-apidocs/v1",
-    "method": "GET"
-  },
-  {
-    "url": "{{baseUrl}}/path/to/another-resource",
-    "method": "POST",
-    "body": {
-      "key": "value"
+{
+  "configuration": {
+    "variables": {
+      "apiVersion": "v1",
+      "commonParam": "shared-value"
+    },
+    "headers": {
+      "User-Agent": "API-Comparator/1.0",
+      "Accept": "application/json"
+    },
+    "referenceConfiguration": {
+      "variables": {
+        "environment": "reference",
+        "apiKey": "ref-api-key-123"
+      },
+      "headers": {
+        "X-Environment": "reference"
+      }
+    },
+    "targetConfiguration": {
+      "variables": {
+        "environment": "target",
+        "apiKey": "target-api-key-456"
+      },
+      "headers": {
+        "X-Environment": "target"
+      }
     }
-  }
-]
+  },
+  "requests": [
+    {
+      "url": "{{baseUrl}}/path/to/resource",
+      "method": "GET"
+    },
+    {
+      "url": "{{baseUrl}}/swagger-apidocs/{{apiVersion}}",
+      "method": "GET"
+    },
+    {
+      "url": "{{baseUrl}}/path/to/another-resource",
+      "method": "POST",
+      "body": {
+        "key": "value",
+        "environment": "{{environment}}",
+        "apiKey": "{{apiKey}}"
+      },
+      "headers": {
+        "X-Custom-Header": "{{commonParam}}"
+      }
+    }
+  ]
+}

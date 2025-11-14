@@ -1,18 +1,60 @@
-import type { GenericRequest, RestfoxExport, RestfoxRequest } from "./types";
+import type { GenericRequest, RestfoxExport, RestfoxRequest, StructuredRequestFile, ParsedConfiguration } from "./types";
 
 /**
- * Parse a generic JSON file with request array
+ * Parse a generic JSON file - supports both legacy array format and new structured format
  */
-export async function parseGenericFile(filePath: string): Promise<GenericRequest[]> {
+export async function parseGenericFile(filePath: string): Promise<{ requests: GenericRequest[], configuration: ParsedConfiguration }> {
   const file = Bun.file(filePath);
   const content = await file.text();
-  const data: GenericRequest[] = JSON.parse(content);
+  const data = JSON.parse(content);
 
-  if (!Array.isArray(data)) {
-    throw new Error("Generic JSON file must be an array of requests");
+  // Check if it's the new structured format
+  if (data && typeof data === 'object' && 'requests' in data && Array.isArray(data.requests)) {
+    const structured = data as StructuredRequestFile;
+    const configuration = parseConfiguration(structured.configuration);
+    return { requests: structured.requests, configuration };
+  }
+  
+  // Legacy format: just an array of requests
+  if (Array.isArray(data)) {
+    const configuration: ParsedConfiguration = {
+      referenceVariables: {},
+      targetVariables: {},
+      referenceHeaders: {},
+      targetHeaders: {}
+    };
+    return { requests: data as GenericRequest[], configuration };
   }
 
-  return data;
+  throw new Error("Generic JSON file must be either an array of requests (legacy) or an object with 'requests' property (new format)");
+}
+
+/**
+ * Parse and merge configuration from structured format
+ */
+function parseConfiguration(config?: RequestFileConfiguration): ParsedConfiguration {
+  const result: ParsedConfiguration = {
+    referenceVariables: {},
+    targetVariables: {},
+    referenceHeaders: {},
+    targetHeaders: {}
+  };
+
+  if (!config) return result;
+
+  // Base variables and headers apply to both
+  const baseVariables = config.variables || {};
+  const baseHeaders = config.headers || {};
+
+  // Reference: base + reference-specific (reference overrides base)
+  result.referenceVariables = { ...baseVariables, ...(config.referenceConfiguration?.variables || {}) };
+  result.referenceHeaders = { ...baseHeaders, ...(config.referenceConfiguration?.headers || {}) };
+
+  // Target: base + target-specific (target overrides base)
+  result.targetVariables = { ...baseVariables, ...(config.targetConfiguration?.variables || {}) };
+  result.targetHeaders = { ...baseHeaders, ...(config.targetConfiguration?.headers || {}) };
+
+  return result;
 }
 
 /**
@@ -58,6 +100,45 @@ export async function parseRestfoxFile(filePath: string): Promise<GenericRequest
  */
 export function replaceBaseUrl(url: string, baseUrl: string): string {
   return url.replace(/\{\{baseUrl\}\}/g, baseUrl);
+}
+
+/**
+ * Replace all variable placeholders in a string
+ */
+export function replaceVariables(text: string, variables: Record<string, any>): string {
+  let result = text;
+  
+  for (const [key, value] of Object.entries(variables)) {
+    const placeholder = new RegExp(`\\{\\{${key}\\}\\}`, "g");
+    result = result.replace(placeholder, String(value));
+  }
+  
+  return result;
+}
+
+/**
+ * Replace variables in request body (if it's a string or object with string values)
+ */
+export function replaceVariablesInBody(body: string | Record<string, unknown> | undefined, variables: Record<string, any>): string | Record<string, unknown> | undefined {
+  if (!body) return body;
+  
+  if (typeof body === 'string') {
+    return replaceVariables(body, variables);
+  }
+  
+  // For objects, recursively replace in all string values
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(body)) {
+    if (typeof value === 'string') {
+      result[key] = replaceVariables(value, variables);
+    } else if (typeof value === 'object' && value !== null) {
+      result[key] = replaceVariablesInBody(value as Record<string, unknown>, variables);
+    } else {
+      result[key] = value;
+    }
+  }
+  
+  return result;
 }
 
 /**

@@ -39,11 +39,20 @@ async function runCompare(options: any) {
 
   // Parse the input file - all formats are converted to GenericRequest[]
   let requests: GenericRequest[];
+  let referenceVariables: Record<string, any> = {};
+  let targetVariables: Record<string, any> = {};
+  let referenceConfigHeaders: Record<string, string> = {};
+  let targetConfigHeaders: Record<string, string> = {};
   
   if (options.inputFileType === "restfox") {
     requests = await parseRestfoxFile(options.inputFile);
   } else {
-    requests = await parseGenericFile(options.inputFile);
+    const parsed = await parseGenericFile(options.inputFile);
+    requests = parsed.requests;
+    referenceVariables = parsed.configuration.referenceVariables;
+    targetVariables = parsed.configuration.targetVariables;
+    referenceConfigHeaders = parsed.configuration.referenceHeaders;
+    targetConfigHeaders = parsed.configuration.targetHeaders;
   }
   
   // Apply limit if specified
@@ -67,20 +76,26 @@ async function runCompare(options: any) {
     process.stdout.write(`\r${progressText}${padding}`);
     lastLineLength = progressText.length;
 
+    // Merge headers: config headers + CLI headers (CLI overrides config)
+    const mergedReferenceHeaders = { ...referenceConfigHeaders, ...(options.referenceHeaders || {}) };
+    const mergedTargetHeaders = { ...targetConfigHeaders, ...(options.targetHeaders || {}) };
+
     // Make requests sequentially to avoid backend conflicts
     // (both APIs might share the same backend)
     const referenceResponse = await makeRequest(
       request, 
-      options.referenceBaseUrl, 
+      options.referenceBaseUrl,
+      referenceVariables,
       {},
-      options.referenceHeaders || {},
+      mergedReferenceHeaders,
       'reference'
     );
     const targetResponse = await makeRequest(
       request, 
       options.targetBaseUrl,
+      targetVariables,
       {},
-      options.targetHeaders || {},
+      mergedTargetHeaders,
       'target'
     );
 
@@ -99,9 +114,9 @@ async function runCompare(options: any) {
     const referenceUrl = request.referenceUrl;
     const targetUrl = request.targetUrl;
 
-    // Collect request headers and body
-    const referenceRequestHeaders = { ...request.headers, ...(options.referenceHeaders || {}) };
-    const targetRequestHeaders = { ...request.headers, ...(options.targetHeaders || {}) };
+    // Collect request headers and body (merge request headers with final headers)
+    const referenceRequestHeaders = { ...request.headers, ...mergedReferenceHeaders };
+    const targetRequestHeaders = { ...request.headers, ...mergedTargetHeaders };
     const requestBody = request.body;
 
     // Store the result

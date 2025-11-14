@@ -96,57 +96,53 @@ The HTML report will be generated in the same directory as the JSON file with th
 
 ## Input Format
 
-The tool supports two input formats:
+The tool supports two input formats for defining requests. For complete documentation with examples, see **[REQUEST_FORMAT.md](./doc/REQUEST_FORMAT.md)**.
 
 ### 1. Generic JSON Format (Default)
 
-A simple JSON array of request objects:
+**Structured Format (Recommended)** - Define variables and headers with environment-specific overrides:
 
 ```json
-[
-  {
-    "url": "https://api.example.com/users/123",
-    "method": "GET"
-  },
-  {
-    "url": "https://api.example.com/users",
-    "method": "POST",
-    "body": "{\"name\":\"John Doe\",\"email\":\"john@example.com\"}",
+{
+  "configuration": {
+    "variables": {
+      "apiVersion": "v1"
+    },
     "headers": {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer token123"
+      "User-Agent": "API-Comparator/1.0"
+    },
+    "referenceConfiguration": {
+      "variables": { "apiKey": "ref-key" }
+    },
+    "targetConfiguration": {
+      "variables": { "apiKey": "target-key" }
     }
-  }
-]
+  },
+  "requests": [
+    {
+      "url": "{{baseUrl}}/api/{{apiVersion}}/users",
+      "method": "GET"
+    }
+  ]
+}
 ```
 
-**Fields:**
-- `url` (optional): The full URL to request
-- `referenceUrl` (optional): Specific URL for the reference environment
-- `targetUrl` (optional): Specific URL for the target environment
-- `method` (optional): HTTP method (default: GET)
-- `body` (optional): Request body as a string
-- `headers` (optional): Object with header key-value pairs
-- `name` (optional): Display name for the request (defaults to URL)
+**Legacy Array Format** - Still supported for backward compatibility:
 
-**URL Handling:**
-- The `{{baseUrl}}` placeholder is replaced with the respective base URLs in all URL fields (`url`, `referenceUrl`, `targetUrl`)
-- If `referenceUrl` and `targetUrl` are provided, they are used for the respective environments
-- If only `url` is provided, it's used for both environments with the respective base URL replacements
-
-**Example with different URLs per environment:**
 ```json
 [
   {
-    "name": "Get User Profile",
-    "method": "GET",
-    "referenceUrl": "{{baseUrl}}/users/1",
-    "targetUrl": "{{baseUrl}}/users/2"
+    "url": "{{baseUrl}}/users/123",
+    "method": "GET"
   }
 ]
 ```
 
-**Note:** Headers specified in the input file are merged with command-line headers (`--reference-headers` and `--target-headers`). Command-line headers take precedence if there's a conflict.
+**Key Features:**
+- **Variable replacement**: Use `{{variableName}}` in URLs, headers, and body
+- **Environment-specific config**: Different variables/headers for reference vs target
+- **Automatic JSON handling**: Object bodies are automatically stringified with `Content-Type: application/json`
+- **Flexible headers**: Define globally or per-request, with CLI override support
 
 ### 2. [Restfox](https://restfox.dev/) Export Format
 
