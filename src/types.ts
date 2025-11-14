@@ -6,7 +6,7 @@ export interface GenericRequest {
   referenceUrl?: string;
   targetUrl?: string;
   method?: string;
-  body?: string;
+  body?: string | Record<string, unknown>;
   headers?: Record<string, string>;
   name?: string;  // Optional display name for the request
 }
@@ -156,4 +156,6 @@ export interface ComparisonReport {
   options: Partial<CliOptions>;
   results: ComparisonResult[];
   inputRequests: GenericRequest[];
+  inputFileName?: string;
+  reportBaseName?: string;
 }

@@ -1127,7 +1127,15 @@ code.config-value {
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Download Input JSON
+            Input JSON
+          </button>
+          <button class="download-input-btn" onclick="downloadHttpFile()" title="Download input requests as REST Client file (.http format)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            REST Client
           </button>
         </div>
       </div>
@@ -1168,7 +1176,7 @@ code.config-value {
         <polyline points="7 10 12 15 17 10"></polyline>
         <line x1="12" y1="15" x2="12" y2="3"></line>
       </svg>
-      Download Report as JSON
+      Report as JSON
     </button>
   </div>
   
@@ -1531,7 +1539,7 @@ function toggleTheme() {
 })();
 
 // Embedded JSON report data
-const reportData = {"timestamp":"2025-11-13T12:00:00.000Z","commandLine":"api-comparator compare --input-file requests.json --reference-base-url https://api.example.com/v1 --target-base-url https://api.example.com/v2","options":{"inputFileType":"generic","action":"compare","inputFile":"requests.json","referenceBaseUrl":"https://api.example.com/v1","targetBaseUrl":"https://api.example.com/v2","noTimestampInReportFilenames":true},"inputRequests":[{"name":"Get User Profile","method":"GET","url":"/users/123","headers":{"Accept":"application/json"}},{"name":"Get Order Details","method":"GET","url":"/orders/456","headers":{"Accept":"application/json"}}],"summary":{"total":2,"passed":1,"failed":1},"results":[{"name":"Get User Profile","method":"GET","url":"/users/123","referenceBaseUrl":"https://api.example.com/v1","targetBaseUrl":"https://api.example.com/v2","reference":{"statusCode":200,"statusText":"OK","body":{"id":123,"name":"John Doe","email":"john.doe@example.com","status":"active"},"duration":45.2},"target":{"statusCode":200,"statusText":"OK","body":{"id":123,"name":"John Doe","email":"john.doe@example.com","status":"active"},"duration":38.7},"differences":[]},{"name":"Get Order Details","method":"GET","url":"/orders/456","referenceBaseUrl":"https://api.example.com/v1","targetBaseUrl":"https://api.example.com/v2","reference":{"statusCode":200,"statusText":"OK","body":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"price":29.99}],"total":59.98,"status":"shipped"},"duration":52.8},"target":{"statusCode":200,"statusText":"OK","body":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"unitPrice":29.99}],"totalAmount":59.98,"orderStatus":"shipped","createdAt":"2025-11-13T10:30:00Z"},"duration":41.3},"differences":[{"type":"body","message":"Response body differs (strict comparison)","expected":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"price":29.99}],"total":59.98,"status":"shipped"},"actual":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"unitPrice":29.99}],"totalAmount":59.98,"orderStatus":"shipped","createdAt":"2025-11-13T10:30:00Z"},"diffBlocks":[{"lines":[{"left":{"type":"unchanged","content":"{","lineNumber":1},"right":{"type":"unchanged","content":"{","lineNumber":1}},{"left":{"type":"unchanged","content":"  \"orderId\": 456,","lineNumber":2},"right":{"type":"unchanged","content":"  \"orderId\": 456,","lineNumber":2}},{"left":{"type":"unchanged","content":"  \"customerId\": 123,","lineNumber":3},"right":{"type":"unchanged","content":"  \"customerId\": 123,","lineNumber":3}},{"left":{"type":"unchanged","content":"  \"items\": [","lineNumber":4},"right":{"type":"unchanged","content":"  \"items\": [","lineNumber":4}},{"left":{"type":"unchanged","content":"    {","lineNumber":5},"right":{"type":"unchanged","content":"    {","lineNumber":5}},{"left":{"type":"unchanged","content":"      \"productId\": 789,","lineNumber":6},"right":{"type":"unchanged","content":"      \"productId\": 789,","lineNumber":6}},{"left":{"type":"unchanged","content":"      \"quantity\": 2,","lineNumber":7},"right":{"type":"unchanged","content":"      \"quantity\": 2,","lineNumber":7}},{"left":{"type":"removed","content":"      \"price\": 29.99","lineNumber":8},"right":null},{"left":null,"right":{"type":"added","content":"      \"unitPrice\": 29.99","lineNumber":8}},{"left":{"type":"unchanged","content":"    }","lineNumber":9},"right":{"type":"unchanged","content":"    }","lineNumber":9}},{"left":{"type":"unchanged","content":"  ],","lineNumber":10},"right":{"type":"unchanged","content":"  ],","lineNumber":10}},{"left":{"type":"removed","content":"  \"total\": 59.98,","lineNumber":11},"right":null},{"left":{"type":"removed","content":"  \"status\": \"shipped\"","lineNumber":12},"right":null},{"left":null,"right":{"type":"added","content":"  \"totalAmount\": 59.98,","lineNumber":11}},{"left":null,"right":{"type":"added","content":"  \"orderStatus\": \"shipped\",","lineNumber":12}},{"left":null,"right":{"type":"added","content":"  \"createdAt\": \"2025-11-13T10:30:00Z\"","lineNumber":13}},{"left":{"type":"unchanged","content":"}","lineNumber":13},"right":{"type":"unchanged","content":"}","lineNumber":14}}],"skipped":false}]}]}]};
+const reportData = {"timestamp":"2025-11-13T12:00:00.000Z","commandLine":"api-comparator compare --input-file requests.json --reference-base-url https://api.example.com/v1 --target-base-url https://api.example.com/v2","options":{"inputFileType":"generic","action":"compare","inputFile":"requests.json","referenceBaseUrl":"https://api.example.com/v1","targetBaseUrl":"https://api.example.com/v2","noTimestampInReportFilenames":true},"inputRequests":[{"name":"Get User Profile","method":"GET","url":"/users/123","headers":{"Accept":"application/json"}},{"name":"Get Order Details","method":"GET","url":"/orders/456","headers":{"Accept":"application/json"}}],"summary":{"total":2,"passed":1,"failed":1},"results":[{"name":"Get User Profile","method":"GET","url":"/users/123","referenceBaseUrl":"https://api.example.com/v1","targetBaseUrl":"https://api.example.com/v2","reference":{"statusCode":200,"statusText":"OK","body":{"id":123,"name":"John Doe","email":"john.doe@example.com","status":"active"},"duration":45.2},"target":{"statusCode":200,"statusText":"OK","body":{"id":123,"name":"John Doe","email":"john.doe@example.com","status":"active"},"duration":38.7},"differences":[]},{"name":"Get Order Details","method":"GET","url":"/orders/456","referenceBaseUrl":"https://api.example.com/v1","targetBaseUrl":"https://api.example.com/v2","reference":{"statusCode":200,"statusText":"OK","body":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"price":29.99}],"total":59.98,"status":"shipped"},"duration":52.8},"target":{"statusCode":200,"statusText":"OK","body":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"unitPrice":29.99}],"totalAmount":59.98,"orderStatus":"shipped","createdAt":"2025-11-13T10:30:00Z"},"duration":41.3},"differences":[{"type":"body","message":"Response body differs (strict comparison)","expected":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"price":29.99}],"total":59.98,"status":"shipped"},"actual":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"unitPrice":29.99}],"totalAmount":59.98,"orderStatus":"shipped","createdAt":"2025-11-13T10:30:00Z"},"diffBlocks":[{"lines":[{"left":{"type":"unchanged","content":"{","lineNumber":1},"right":{"type":"unchanged","content":"{","lineNumber":1}},{"left":{"type":"unchanged","content":"  \"orderId\": 456,","lineNumber":2},"right":{"type":"unchanged","content":"  \"orderId\": 456,","lineNumber":2}},{"left":{"type":"unchanged","content":"  \"customerId\": 123,","lineNumber":3},"right":{"type":"unchanged","content":"  \"customerId\": 123,","lineNumber":3}},{"left":{"type":"unchanged","content":"  \"items\": [","lineNumber":4},"right":{"type":"unchanged","content":"  \"items\": [","lineNumber":4}},{"left":{"type":"unchanged","content":"    {","lineNumber":5},"right":{"type":"unchanged","content":"    {","lineNumber":5}},{"left":{"type":"unchanged","content":"      \"productId\": 789,","lineNumber":6},"right":{"type":"unchanged","content":"      \"productId\": 789,","lineNumber":6}},{"left":{"type":"unchanged","content":"      \"quantity\": 2,","lineNumber":7},"right":{"type":"unchanged","content":"      \"quantity\": 2,","lineNumber":7}},{"left":{"type":"removed","content":"      \"price\": 29.99","lineNumber":8},"right":null},{"left":null,"right":{"type":"added","content":"      \"unitPrice\": 29.99","lineNumber":8}},{"left":{"type":"unchanged","content":"    }","lineNumber":9},"right":{"type":"unchanged","content":"    }","lineNumber":9}},{"left":{"type":"unchanged","content":"  ],","lineNumber":10},"right":{"type":"unchanged","content":"  ],","lineNumber":10}},{"left":{"type":"removed","content":"  \"total\": 59.98,","lineNumber":11},"right":null},{"left":{"type":"removed","content":"  \"status\": \"shipped\"","lineNumber":12},"right":null},{"left":null,"right":{"type":"added","content":"  \"totalAmount\": 59.98,","lineNumber":11}},{"left":null,"right":{"type":"added","content":"  \"orderStatus\": \"shipped\",","lineNumber":12}},{"left":null,"right":{"type":"added","content":"  \"createdAt\": \"2025-11-13T10:30:00Z\"","lineNumber":13}},{"left":{"type":"unchanged","content":"}","lineNumber":13},"right":{"type":"unchanged","content":"}","lineNumber":14}}],"skipped":false}]}]}],"reportBaseName":"comparison-report-demo"};
 
 function downloadJson() {
   const dataStr = JSON.stringify(reportData, null, 2);
@@ -1539,7 +1547,7 @@ function downloadJson() {
   const url = URL.createObjectURL(dataBlob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'comparison-report-' + new Date(reportData.timestamp).toISOString().split('T')[0] + '.json';
+  link.download = (reportData.reportBaseName || 'comparison-report') + '.json';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -1552,7 +1560,78 @@ function downloadInputJson() {
   const url = URL.createObjectURL(dataBlob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'input-requests-' + new Date(reportData.timestamp).toISOString().split('T')[0] + '.json';
+  link.download = (reportData.inputFileName || 'input-requests') + '.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function downloadHttpFile() {
+  // Build .http file content
+  let httpContent = '';
+  
+  // Add variables at the top
+  if (reportData.options.referenceBaseUrl) {
+    httpContent += `@referenceBaseUrl = ${reportData.options.referenceBaseUrl}\n`;
+  }
+  if (reportData.options.targetBaseUrl) {
+    httpContent += `@targetBaseUrl = ${reportData.options.targetBaseUrl}\n`;
+  }
+  
+  // Set default baseUrl to target (can be changed by user)
+  if (reportData.options.referenceBaseUrl && reportData.options.targetBaseUrl) {
+    httpContent += `# @baseUrl = {{referenceBaseUrl}}\n`;
+    httpContent += `@baseUrl = {{targetBaseUrl}}\n`;
+  } else if (reportData.options.targetBaseUrl) {
+    httpContent += `@baseUrl = {{targetBaseUrl}}\n`;
+  } else if (reportData.options.referenceBaseUrl) {
+    httpContent += `@baseUrl = {{referenceBaseUrl}}\n`;
+  }
+  
+  if (httpContent) {
+    httpContent += '\n###\n\n';
+  }
+  
+  reportData.results.forEach((result, index) => {
+    if (index > 0) {
+      httpContent += '\n###\n\n';
+    }
+    
+    // Add comment with request name
+    httpContent += `# ${result.name}\n`;
+    
+    // Build URL using {{baseUrl}} variable
+    let path = result.url;
+    // Remove {{baseUrl}} placeholder if present in the path
+    path = path.replace('{{baseUrl}}', '');
+    
+    // Add method and URL with variable
+    httpContent += `${result.method} {{baseUrl}}${path}\n`;
+    
+    // Add headers
+    if (result.referenceRequestHeaders && Object.keys(result.referenceRequestHeaders).length > 0) {
+      for (const [key, value] of Object.entries(result.referenceRequestHeaders)) {
+        httpContent += `${key}: ${value}\n`;
+      }
+    }
+    
+    // Add body if present
+    if (result.requestBody && result.method !== 'GET' && result.method !== 'HEAD') {
+      httpContent += '\n';
+      const bodyStr = typeof result.requestBody === 'object' 
+        ? JSON.stringify(result.requestBody, null, 2) 
+        : String(result.requestBody);
+      httpContent += bodyStr;
+      httpContent += '\n';
+    }
+  });
+  
+  const dataBlob = new Blob([httpContent], { type: 'text/plain' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = (reportData.inputFileName || 'requests') + '.http';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

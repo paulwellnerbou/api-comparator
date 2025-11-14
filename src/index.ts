@@ -140,6 +140,9 @@ async function runCompare(options: any) {
   const args = process.argv.slice(2);
   const commandLine = `bun run dev -- ${args.join(' ')}`;
 
+  // Extract input filename without extension
+  const inputFileName = options.inputFile.split('/').pop()?.replace(/\.[^/.]+$/, '') || 'report';
+
   // Generate the report
   const report: ComparisonReport = {
     timestamp: new Date().toISOString(),
@@ -147,24 +150,30 @@ async function runCompare(options: any) {
     options,
     inputRequests: requests,  // Include the input requests in generic format
     results,
+    inputFileName,
+    reportBaseName: '', // Will be set below based on output path
   };
 
   // Save JSON report to file
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const inputFileName = options.inputFile.split('/').pop()?.replace(/\.[^/.]+$/, '') || 'report';
   
   let jsonOutputPath: string;
   let htmlOutputPath: string;
+  let reportBaseName: string;
   
   if (options.outputFile) {
     // User specified output file - use it as base name
     const outputBase = options.outputFile.replace(/\.(json|html)$/, '');
+    reportBaseName = outputBase.split('/').pop() || 'report';
     const outputDir = options.outputDir || '.';
     jsonOutputPath = `${outputDir}/${outputBase}.json`;
     htmlOutputPath = `${outputDir}/${outputBase}.html`;
   } else if (options.outputDir) {
     // User specified only output dir
     const baseFileName = `comparison-report-${inputFileName}`;
+    reportBaseName = options.noTimestampInReportFilenames 
+      ? baseFileName
+      : `${baseFileName}-${timestamp}`;
     jsonOutputPath = options.noTimestampInReportFilenames 
       ? `${options.outputDir}/${baseFileName}.json`
       : `${options.outputDir}/${baseFileName}-${timestamp}.json`;
@@ -174,6 +183,9 @@ async function runCompare(options: any) {
   } else {
     // No output options specified - use default behavior
     const baseFileName = `comparison-report-${inputFileName}`;
+    reportBaseName = options.noTimestampInReportFilenames 
+      ? baseFileName
+      : `${baseFileName}-${timestamp}`;
     jsonOutputPath = options.noTimestampInReportFilenames 
       ? `${baseFileName}.json`
       : `${baseFileName}-${timestamp}.json`;
@@ -181,6 +193,9 @@ async function runCompare(options: any) {
       ? `${baseFileName}.html`
       : `${baseFileName}-${timestamp}.html`;
   }
+  
+  // Set the report base name
+  report.reportBaseName = reportBaseName;
   
   await generateReport(report, jsonOutputPath);
 
@@ -204,14 +219,25 @@ async function runReport(options: any) {
   const content = await file.text();
   const report: ComparisonReport = JSON.parse(content);
 
+  // Validate that this is a comparison report, not an input file
+  if (!report.timestamp || !report.results || !Array.isArray(report.results)) {
+    console.error("\n❌ Error: The input file does not appear to be a valid comparison report JSON.");
+    console.error("   Expected a comparison report with 'timestamp' and 'results' fields.");
+    console.error("   To generate a report, use the 'compare' action instead:");
+    console.error(`   bun run dev compare --input-file ${options.inputFile} --reference-base-url <url> --target-base-url <url>`);
+    process.exit(1);
+  }
+
   // Generate HTML report
   let htmlOutputPath: string;
+  let reportBaseName: string;
   
   if (options.outputFile) {
     // User specified output file
     const outputFileName = options.outputFile.endsWith('.html') 
       ? options.outputFile 
       : `${options.outputFile}.html`;
+    reportBaseName = outputFileName.split('/').pop()?.replace(/\.html$/, '') || 'report';
     const outputDir = options.outputDir || '.';
     htmlOutputPath = `${outputDir}/${outputFileName}`;
   } else {
@@ -222,7 +248,13 @@ async function runReport(options: any) {
     const inputDir = options.outputDir || (lastSlashIndex >= 0 ? inputPath.substring(0, lastSlashIndex) : '.');
     const inputFileName = lastSlashIndex >= 0 ? inputPath.substring(lastSlashIndex + 1) : inputPath;
     const baseFileName = inputFileName.replace(/\.json$/, '');
+    reportBaseName = baseFileName;
     htmlOutputPath = `${inputDir}/${baseFileName}.html`;
+  }
+  
+  // Set report base name if not already set
+  if (!report.reportBaseName) {
+    report.reportBaseName = reportBaseName;
   }
   
   await generateHtmlReport(report, htmlOutputPath);

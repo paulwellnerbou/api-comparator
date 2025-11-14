@@ -73,7 +73,17 @@ export async function makeRequest(
     // Prepare request body if present
     let requestBody: string | undefined;
     if (request.body) {
-      requestBody = request.body;
+      // If body is already a string, use it as-is
+      // If body is an object, stringify it and set Content-Type header
+      if (typeof request.body === 'string') {
+        requestBody = request.body;
+      } else {
+        requestBody = JSON.stringify(request.body);
+        // Set Content-Type header if not already present
+        if (!headers['Content-Type'] && !headers['content-type']) {
+          headers['Content-Type'] = 'application/json';
+        }
+      }
     }
 
     const response = await fetch(url, {

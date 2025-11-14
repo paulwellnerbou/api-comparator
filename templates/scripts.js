@@ -129,7 +129,7 @@ function downloadJson() {
   const url = URL.createObjectURL(dataBlob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'comparison-report-' + new Date(reportData.timestamp).toISOString().split('T')[0] + '.json';
+  link.download = (reportData.reportBaseName || 'comparison-report') + '.json';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -142,7 +142,78 @@ function downloadInputJson() {
   const url = URL.createObjectURL(dataBlob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'input-requests-' + new Date(reportData.timestamp).toISOString().split('T')[0] + '.json';
+  link.download = (reportData.inputFileName || 'input-requests') + '.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function downloadHttpFile() {
+  // Build .http file content
+  let httpContent = '';
+  
+  // Add variables at the top
+  if (reportData.options.referenceBaseUrl) {
+    httpContent += `@referenceBaseUrl = ${reportData.options.referenceBaseUrl}\n`;
+  }
+  if (reportData.options.targetBaseUrl) {
+    httpContent += `@targetBaseUrl = ${reportData.options.targetBaseUrl}\n`;
+  }
+  
+  // Set default baseUrl to target (can be changed by user)
+  if (reportData.options.referenceBaseUrl && reportData.options.targetBaseUrl) {
+    httpContent += `# @baseUrl = {{referenceBaseUrl}}\n`;
+    httpContent += `@baseUrl = {{targetBaseUrl}}\n`;
+  } else if (reportData.options.targetBaseUrl) {
+    httpContent += `@baseUrl = {{targetBaseUrl}}\n`;
+  } else if (reportData.options.referenceBaseUrl) {
+    httpContent += `@baseUrl = {{referenceBaseUrl}}\n`;
+  }
+  
+  if (httpContent) {
+    httpContent += '\n###\n\n';
+  }
+  
+  reportData.results.forEach((result, index) => {
+    if (index > 0) {
+      httpContent += '\n###\n\n';
+    }
+    
+    // Add comment with request name
+    httpContent += `# ${result.name}\n`;
+    
+    // Build URL using {{baseUrl}} variable
+    let path = result.url;
+    // Remove {{baseUrl}} placeholder if present in the path
+    path = path.replace('{{baseUrl}}', '');
+    
+    // Add method and URL with variable
+    httpContent += `${result.method} {{baseUrl}}${path}\n`;
+    
+    // Add headers
+    if (result.referenceRequestHeaders && Object.keys(result.referenceRequestHeaders).length > 0) {
+      for (const [key, value] of Object.entries(result.referenceRequestHeaders)) {
+        httpContent += `${key}: ${value}\n`;
+      }
+    }
+    
+    // Add body if present
+    if (result.requestBody && result.method !== 'GET' && result.method !== 'HEAD') {
+      httpContent += '\n';
+      const bodyStr = typeof result.requestBody === 'object' 
+        ? JSON.stringify(result.requestBody, null, 2) 
+        : String(result.requestBody);
+      httpContent += bodyStr;
+      httpContent += '\n';
+    }
+  });
+  
+  const dataBlob = new Blob([httpContent], { type: 'text/plain' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = (reportData.inputFileName || 'requests') + '.http';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
