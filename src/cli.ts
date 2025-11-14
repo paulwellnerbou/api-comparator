@@ -191,13 +191,6 @@ Examples:
     --reference-headers "API-Key: xyz123, User-Agent: MyApp" \\
     --target-headers "API-Key: abc456"
 
-  # Compare without timestamp in filenames
-  api-comparator compare \
-    --input-file Restfox_2025-11-11.json \
-    --reference-base-url https://api-current.example.com \
-    --target-base-url https://api-next.example.com \
-    --no-timestamp-in-report-filenames
-
   # Generate HTML report from existing JSON
   api-comparator report \\
     --input-file comparison-report-2025-11-11T10-30-45-123Z.json

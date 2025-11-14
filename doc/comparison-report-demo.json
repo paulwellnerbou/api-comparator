@@ -1,0 +1,327 @@
+{
+  "timestamp": "2025-11-13T12:00:00.000Z",
+  "commandLine": "api-comparator compare --input-file requests.json --reference-base-url https://api.example.com/v1 --target-base-url https://api.example.com/v2",
+  "options": {
+    "inputFileType": "generic",
+    "action": "compare",
+    "inputFile": "requests.json",
+    "referenceBaseUrl": "https://api.example.com/v1",
+    "targetBaseUrl": "https://api.example.com/v2",
+    "noTimestampInReportFilenames": true
+  },
+  "inputRequests": [
+    {
+      "name": "Get User Profile",
+      "method": "GET",
+      "url": "/users/123",
+      "headers": {
+        "Accept": "application/json"
+      }
+    },
+    {
+      "name": "Get Order Details",
+      "method": "GET",
+      "url": "/orders/456",
+      "headers": {
+        "Accept": "application/json"
+      }
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "passed": 1,
+    "failed": 1
+  },
+  "results": [
+    {
+      "name": "Get User Profile",
+      "method": "GET",
+      "url": "/users/123",
+      "referenceBaseUrl": "https://api.example.com/v1",
+      "targetBaseUrl": "https://api.example.com/v2",
+      "reference": {
+        "statusCode": 200,
+        "statusText": "OK",
+        "body": {
+          "id": 123,
+          "name": "John Doe",
+          "email": "john.doe@example.com",
+          "status": "active"
+        },
+        "duration": 45.2
+      },
+      "target": {
+        "statusCode": 200,
+        "statusText": "OK",
+        "body": {
+          "id": 123,
+          "name": "John Doe",
+          "email": "john.doe@example.com",
+          "status": "active"
+        },
+        "duration": 38.7
+      },
+      "differences": []
+    },
+    {
+      "name": "Get Order Details",
+      "method": "GET",
+      "url": "/orders/456",
+      "referenceBaseUrl": "https://api.example.com/v1",
+      "targetBaseUrl": "https://api.example.com/v2",
+      "reference": {
+        "statusCode": 200,
+        "statusText": "OK",
+        "body": {
+          "orderId": 456,
+          "customerId": 123,
+          "items": [
+            {
+              "productId": 789,
+              "quantity": 2,
+              "price": 29.99
+            }
+          ],
+          "total": 59.98,
+          "status": "shipped"
+        },
+        "duration": 52.8
+      },
+      "target": {
+        "statusCode": 200,
+        "statusText": "OK",
+        "body": {
+          "orderId": 456,
+          "customerId": 123,
+          "items": [
+            {
+              "productId": 789,
+              "quantity": 2,
+              "unitPrice": 29.99
+            }
+          ],
+          "totalAmount": 59.98,
+          "orderStatus": "shipped",
+          "createdAt": "2025-11-13T10:30:00Z"
+        },
+        "duration": 41.3
+      },
+      "differences": [
+        {
+          "type": "body",
+          "message": "Response body differs (strict comparison)",
+          "expected": {
+            "orderId": 456,
+            "customerId": 123,
+            "items": [
+              {
+                "productId": 789,
+                "quantity": 2,
+                "price": 29.99
+              }
+            ],
+            "total": 59.98,
+            "status": "shipped"
+          },
+          "actual": {
+            "orderId": 456,
+            "customerId": 123,
+            "items": [
+              {
+                "productId": 789,
+                "quantity": 2,
+                "unitPrice": 29.99
+              }
+            ],
+            "totalAmount": 59.98,
+            "orderStatus": "shipped",
+            "createdAt": "2025-11-13T10:30:00Z"
+          },
+          "diffBlocks": [
+            {
+              "lines": [
+                {
+                  "left": {
+                    "type": "unchanged",
+                    "content": "{",
+                    "lineNumber": 1
+                  },
+                  "right": {
+                    "type": "unchanged",
+                    "content": "{",
+                    "lineNumber": 1
+                  }
+                },
+                {
+                  "left": {
+                    "type": "unchanged",
+                    "content": "  \"orderId\": 456,",
+                    "lineNumber": 2
+                  },
+                  "right": {
+                    "type": "unchanged",
+                    "content": "  \"orderId\": 456,",
+                    "lineNumber": 2
+                  }
+                },
+                {
+                  "left": {
+                    "type": "unchanged",
+                    "content": "  \"customerId\": 123,",
+                    "lineNumber": 3
+                  },
+                  "right": {
+                    "type": "unchanged",
+                    "content": "  \"customerId\": 123,",
+                    "lineNumber": 3
+                  }
+                },
+                {
+                  "left": {
+                    "type": "unchanged",
+                    "content": "  \"items\": [",
+                    "lineNumber": 4
+                  },
+                  "right": {
+                    "type": "unchanged",
+                    "content": "  \"items\": [",
+                    "lineNumber": 4
+                  }
+                },
+                {
+                  "left": {
+                    "type": "unchanged",
+                    "content": "    {",
+                    "lineNumber": 5
+                  },
+                  "right": {
+                    "type": "unchanged",
+                    "content": "    {",
+                    "lineNumber": 5
+                  }
+                },
+                {
+                  "left": {
+                    "type": "unchanged",
+                    "content": "      \"productId\": 789,",
+                    "lineNumber": 6
+                  },
+                  "right": {
+                    "type": "unchanged",
+                    "content": "      \"productId\": 789,",
+                    "lineNumber": 6
+                  }
+                },
+                {
+                  "left": {
+                    "type": "unchanged",
+                    "content": "      \"quantity\": 2,",
+                    "lineNumber": 7
+                  },
+                  "right": {
+                    "type": "unchanged",
+                    "content": "      \"quantity\": 2,",
+                    "lineNumber": 7
+                  }
+                },
+                {
+                  "left": {
+                    "type": "removed",
+                    "content": "      \"price\": 29.99",
+                    "lineNumber": 8
+                  },
+                  "right": null
+                },
+                {
+                  "left": null,
+                  "right": {
+                    "type": "added",
+                    "content": "      \"unitPrice\": 29.99",
+                    "lineNumber": 8
+                  }
+                },
+                {
+                  "left": {
+                    "type": "unchanged",
+                    "content": "    }",
+                    "lineNumber": 9
+                  },
+                  "right": {
+                    "type": "unchanged",
+                    "content": "    }",
+                    "lineNumber": 9
+                  }
+                },
+                {
+                  "left": {
+                    "type": "unchanged",
+                    "content": "  ],",
+                    "lineNumber": 10
+                  },
+                  "right": {
+                    "type": "unchanged",
+                    "content": "  ],",
+                    "lineNumber": 10
+                  }
+                },
+                {
+                  "left": {
+                    "type": "removed",
+                    "content": "  \"total\": 59.98,",
+                    "lineNumber": 11
+                  },
+                  "right": null
+                },
+                {
+                  "left": {
+                    "type": "removed",
+                    "content": "  \"status\": \"shipped\"",
+                    "lineNumber": 12
+                  },
+                  "right": null
+                },
+                {
+                  "left": null,
+                  "right": {
+                    "type": "added",
+                    "content": "  \"totalAmount\": 59.98,",
+                    "lineNumber": 11
+                  }
+                },
+                {
+                  "left": null,
+                  "right": {
+                    "type": "added",
+                    "content": "  \"orderStatus\": \"shipped\",",
+                    "lineNumber": 12
+                  }
+                },
+                {
+                  "left": null,
+                  "right": {
+                    "type": "added",
+                    "content": "  \"createdAt\": \"2025-11-13T10:30:00Z\"",
+                    "lineNumber": 13
+                  }
+                },
+                {
+                  "left": {
+                    "type": "unchanged",
+                    "content": "}",
+                    "lineNumber": 13
+                  },
+                  "right": {
+                    "type": "unchanged",
+                    "content": "}",
+                    "lineNumber": 14
+                  }
+                }
+              ],
+              "skipped": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

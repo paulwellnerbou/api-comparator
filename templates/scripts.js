@@ -85,6 +85,27 @@ function copyCurlCommand(event, curlId) {
   });
 }
 
+function copyHttpRequest(event, httpId) {
+  const httpText = document.getElementById('http-' + httpId).value;
+  
+  navigator.clipboard.writeText(httpText).then(() => {
+    const button = event.target.closest('.copy-button');
+    const originalHTML = button.innerHTML;
+    
+    // Show checkmark
+    button.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 4L6 11.5L2.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    button.style.background = '#10b981';
+    
+    // Reset after 2 seconds
+    setTimeout(() => {
+      button.innerHTML = originalHTML;
+      button.style.background = '#667eea';
+    }, 2000);
+  }).catch(err => {
+    console.error('❌ Error:', err);
+  });
+}
+
 function toggleTheme() {
   const html = document.documentElement;
   const currentTheme = html.getAttribute('data-theme');

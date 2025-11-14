@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Comparison Report - 2025-11-13T12:00:00.000Z</title>
+  <style>
+    :root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #f9fafb;
+  --bg-hover: rgba(102, 126, 234, 0.1);
+  --bg-hover-active: rgba(102, 126, 234, 0.15);
+  --text-primary: #333;
+  --text-secondary: #666;
+  --border-color: #e0e0e0;
+  --border-color-light: #e5e7eb;
+  --code-bg: #fff;
+  --diff-separator-bg: #f9fafb;
+  --diff-separator-border: #e5e7eb;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #4a4a4a;
+  --bg-secondary: #3e3e3e;
+  --bg-tertiary: #565656;
+  --bg-hover: rgba(102, 126, 234, 0.2);
+  --bg-hover-active: rgba(102, 126, 234, 0.3);
+  --text-primary: #d4d4d4;
+  --text-secondary: #9a9a9a;
+  --border-color: #666666;
+  --border-color-light: #5a5a5a;
+  --code-bg: #505050;
+  --diff-separator-bg: #585858;
+  --diff-separator-border: #666666;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  padding: 1rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  background: var(--bg-primary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.header-content h1 {
+  font-size: 2rem;
+  font-weight: 100;
+  margin: 0;
+}
+
+.theme-toggle {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.theme-toggle svg {
+  width: 16px;
+  height: 16px;
+  stroke: white;
+  transition: stroke 0.3s;
+}
+
+.theme-toggle .sun-icon {
+  display: none;
+}
+
+.theme-toggle .moon-icon {
+  display: block;
+}
+
+[data-theme="dark"] .theme-toggle .sun-icon {
+  display: block;
+}
+
+[data-theme="dark"] .theme-toggle .moon-icon {
+  display: none;
+}
+
+.header {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 100;
+  margin-bottom: 0.25rem;
+}
+
+.header .timestamp {
+  opacity: 0.9;
+  font-size: 0.875rem;
+  font-weight: 100;
+}
+
+.config {
+  padding: 1rem 1.5rem;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.config h2 {
+  font-size: 0.9375rem;
+  font-weight: 100;
+  margin-bottom: 1rem;
+  color: #667eea;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  background: var(--bg-hover);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  transition: background 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.config h2:hover {
+  background: var(--bg-hover-active);
+  border-color: rgba(102, 126, 234, 0.4);
+}
+
+.config-toggle-icon {
+  font-size: 0.875rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.config-collapsible {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.4s ease;
+}
+
+.config-collapsible.collapsed {
+  grid-template-rows: 0fr;
+}
+
+.config-collapsible > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.config-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px 10px;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+
+.config-item {
+  display: contents;
+}
+
+.config-label {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  align-self: center;
+}
+
+.config-value {
+  color: var(--text-primary);
+  font-size: 13px;
+  transition: color 0.3s;
+  align-self: center;
+}
+
+.input-file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.input-file-row .config-value {
+  flex: 1;
+  min-width: 0;
+}
+
+.config-value code,
+code.config-value {
+  background: var(--code-bg);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  font-size: 12px;
+  font-stretch: condensed;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.download-input-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.download-input-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.download-input-btn:active {
+  transform: translateY(0);
+}
+
+.download-input-btn svg {
+  flex-shrink: 0;
+}
+
+.command-line {
+  position: relative;
+}
+
+.command-line code {
+  background: var(--code-bg);
+  padding: 12px;
+  padding-right: 45px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  font-size: 12px;
+  font-stretch: condensed;
+  display: block;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.copy-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(102, 126, 234, 0.85);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 1;
+}
+
+.copy-button:hover {
+  background: rgba(85, 104, 211, 0.95);
+}
+
+.copy-button:active {
+  background: rgba(76, 94, 196, 1);
+}
+
+.copy-button svg {
+  display: block;
+}
+
+.results {
+  padding: 1rem 1.5rem;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.results h2 {
+  font-size: 1rem;
+  font-weight: 100;
+  margin: 0;
+  color: #667eea;
+}
+
+[data-theme="dark"] .results h2 {
+  color: #8b9dff;
+}
+
+.download-json-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.download-json-btn:hover {
+  background: #5568d3;
+  transform: translateY(-1px);
+}
+
+.download-json-btn:active {
+  transform: translateY(0);
+}
+
+.download-json-btn svg {
+  flex-shrink: 0;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-tab {
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-tab:hover {
+  border-color: #667eea;
+  background: var(--bg-tertiary);
+}
+
+.filter-tab.active {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.filter-tab[data-filter="all"].active {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.filter-tab[data-filter="passed"].active {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+.filter-tab[data-filter="passed-with-errors"].active {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.filter-tab[data-filter="failed"].active {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+[data-theme="dark"] .filter-tab.active {
+  border-color: #667eea;
+  background: #2d3561;
+}
+
+[data-theme="dark"] .filter-tab[data-filter="all"].active {
+  border-color: #667eea;
+  background: #2d3561;
+}
+
+[data-theme="dark"] .filter-tab[data-filter="passed"].active {
+  border-color: #10b981;
+  background: #1a4d3a;
+}
+
+[data-theme="dark"] .filter-tab[data-filter="passed-with-errors"].active {
+  border-color: #f59e0b;
+  background: #4a3518;
+}
+
+[data-theme="dark"] .filter-tab[data-filter="failed"].active {
+  border-color: #ef4444;
+  background: #5a2828;
+}
+
+.tab-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.filter-tab[data-filter="all"] .tab-number {
+  color: #667eea;
+}
+
+.filter-tab[data-filter="passed"] .tab-number {
+  color: #10b981;
+}
+
+.filter-tab[data-filter="passed-with-errors"] .tab-number {
+  color: #f59e0b;
+}
+
+.filter-tab[data-filter="failed"] .tab-number {
+  color: #ef4444;
+}
+
+.tab-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+}
+
+.result-item {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: all 0.3s;
+  background: var(--bg-primary);
+}
+
+.result-item:hover {
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s;
+}
+
+.result-item.passed .result-header {
+  background: #f0fdf4;
+}
+
+.result-item.failed .result-header {
+  background: #fef2f2;
+}
+
+[data-theme="dark"] .result-item.passed .result-header {
+  background: #064e3b;
+}
+
+[data-theme="dark"] .result-item.failed .result-header {
+  background: #7f1d1d;
+}
+
+.result-status {
+  font-size: 1.25rem;
+  margin-right: 0.75rem;
+}
+
+.result-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.result-name {
+  flex: 1;
+  font-weight: 400;
+  color: var(--text-primary);
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  font-size: 12px;
+  font-stretch: condensed;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  transition: color 0.3s;
+}
+
+.result-method {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.url-text {
+  flex: 1;
+  min-width: 0;
+  user-select: text;
+  cursor: text;
+}
+
+.method-GET { background: #dbeafe; color: #1e40af; }
+.method-POST { background: #dcfce7; color: #166534; }
+.method-PUT { background: #fef3c7; color: #92400e; }
+.method-PATCH { background: #e9d5ff; color: #6b21a8; }
+.method-DELETE { background: #fee2e2; color: #991b1b; }
+
+.result-timing {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: color 0.3s;
+}
+
+.status-code-ok {
+  color: #10b981;
+}
+
+.status-code-error {
+  color: #ef4444;
+}
+
+.result-details {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease, border-top 0.4s ease, visibility 0s 0.4s;
+  border-top: 1px solid transparent;
+  background: var(--bg-primary);
+  visibility: hidden;
+}
+
+.result-details-content {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.request-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.request-details-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.request-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.request-details-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #667eea;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.copy-curl-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copy-curl-btn:hover {
+  background: #5568d3;
+  transform: translateY(-1px);
+}
+
+.copy-curl-btn svg {
+  flex-shrink: 0;
+}
+
+.request-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.request-detail-label {
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.request-detail-value {
+  background: var(--code-bg);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  font-size: 11px;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  transition: all 0.3s;
+}
+
+.request-headers {
+  white-space: pre-wrap;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.request-body {
+  white-space: pre-wrap;
+  font-size: 10px;
+  line-height: 1.6;
+  display: block;
+}
+
+.request-http-container {
+  margin-top: 0.75rem;
+}
+
+[data-theme="dark"] .request-details-title {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .copy-curl-btn {
+  background: #8b9dff;
+}
+
+[data-theme="dark"] .copy-curl-btn:hover {
+  background: #a5b4ff;
+}
+
+.result-item.expanded .result-details {
+  grid-template-rows: 1fr;
+  border-top: 1px solid var(--border-color);
+  visibility: visible;
+  transition: grid-template-rows 0.4s ease, border-top 0.4s ease, visibility 0s 0s;
+}
+
+.detail-section {
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+.detail-section:first-child {
+  padding-top: 1rem;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 1rem;
+}
+
+.detail-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #667eea;
+  font-size: 0.875rem;
+}
+
+.url-display {
+  background: var(--bg-tertiary);
+  padding: 0.625rem;
+  border-radius: 0.25rem;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  font-size: 12px;
+  font-stretch: condensed;
+  word-break: break-all;
+  transition: background 0.3s;
+}
+
+.status-codes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.status-box {
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  background: var(--bg-tertiary);
+  transition: background 0.3s;
+}
+
+.status-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+  transition: color 0.3s;
+}
+
+.status-value {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.status-ok { color: #10b981; }
+.status-error { color: #ef4444; }
+
+.status-body {
+  margin-top: 0.5rem;
+}
+
+.status-body-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+  transition: color 0.3s;
+}
+
+.status-body-content {
+  background: var(--code-bg);
+  padding: 0.625rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  max-height: 18.75rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  transition: all 0.3s;
+}
+
+.differences {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 1rem;
+}
+
+.errors-section {
+  padding-top: 0;
+}
+
+.no-differences {
+  padding: 1rem 1rem 0 1rem;
+}
+
+.detail-section {
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+.detail-section:first-child {
+  padding-top: 1rem;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 1rem;
+}
+
+.detail-title {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s;
+}
+
+.errors-section .detail-title {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0.75rem;
+}
+
+.diff-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.diff-message {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #667eea;
+  font-size: 0.875rem;
+}
+
+.error-subtitle {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.diff-view {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  background: var(--code-bg);
+  border: 1px solid var(--border-color-light);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.no-differences .diff-view {
+  margin-bottom: 1rem;
+}
+
+.diff-view.full-width {
+  grid-template-columns: 1fr;
+}
+
+.diff-side {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.diff-view.full-width .diff-side:first-child {
+  border-right: none;
+}
+
+.diff-side:first-child {
+  border-right: 1px solid var(--border-color-light);
+}
+
+.diff-side-header {
+  background: var(--diff-separator-bg);
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--diff-separator-border);
+  transition: all 0.3s;
+}
+
+.diff-content {
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  transition: all 0.3s;
+}
+
+.diff-content code {
+  font-family: inherit;
+  background: var(--code-bg);
+  padding: 0;
+  display: inline-block;
+  min-width: 100%;
+  transition: background 0.3s;
+}
+
+/* Add padding for simple code displays without diff lines */
+.diff-content code:not(:has(.diff-line)) {
+  padding: 12px;
+}
+
+.diff-line {
+  display: block;
+  padding: 0 4px 0 0;
+  margin: 0;
+  min-width: 100%;
+  width: fit-content;
+  white-space: pre;
+}
+
+.diff-line-number {
+  display: inline-block;
+  width: 45px;
+  padding: 0 8px;
+  text-align: right;
+  color: #9ca3af;
+  user-select: none;
+  font-size: 11px;
+  background: var(--diff-separator-bg);
+  border-right: 1px solid var(--diff-separator-border);
+  margin-right: 8px;
+  transition: all 0.3s;
+}
+
+.diff-line-removed .diff-line-number {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
+.diff-line-added .diff-line-number {
+  background: #a7f3d0;
+  color: #064e3b;
+}
+
+.diff-line-empty {
+  background-color: #f3f4f6;
+  opacity: 0.5;
+}
+
+.diff-line-empty .diff-line-number {
+  background: #f3f4f6;
+}
+
+.diff-separator {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 18px;
+  padding: 8px 0;
+  margin: 0;
+  min-width: 100%;
+  width: fit-content;
+  background: var(--diff-separator-bg);
+  border-top: 1px dashed var(--border-color);
+  border-bottom: 1px dashed var(--border-color);
+  user-select: none;
+  transition: all 0.3s;
+}
+
+.diff-line-added {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.diff-line-removed {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.diff-line-changed {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.diff-values {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.625rem;
+}
+
+.diff-value {
+  background: var(--code-bg);
+  padding: 0.625rem;
+  border-radius: 0.25rem;
+  border: 1px solid #fecaca;
+  transition: all 0.3s;
+}
+
+.diff-value-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 0.3125rem;
+  transition: color 0.3s;
+}
+
+.diff-value-content {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  max-height: 12.5rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  transition: color 0.3s;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3.75rem 1.25rem;
+  color: var(--text-secondary);
+  transition: color 0.3s;
+}
+
+.footer {
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  transition: all 0.3s;
+}
+
+.footer a {
+  color: #667eea;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer a:hover {
+  color: #5568d3;
+  text-decoration: underline;
+}
+
+/* Dark mode overrides for purple/blue title colors */
+[data-theme="dark"] .config h2 {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .results h2 {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .detail-title {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .diff-message {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .footer a {
+  color: #8b9dff;
+}
+
+[data-theme="dark"] .footer a:hover {
+  color: #a5b4ff;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+  <div class="header-content">
+    <div>
+      <h1>API Comparison Report</h1>
+      <div class="timestamp">Generated: 2025-11-13 12:00:00</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+      <svg class="theme-icon sun-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 2V4M10 16V18M18 10H16M4 10H2M15.657 4.343L14.243 5.757M5.757 14.243L4.343 15.657M15.657 15.657L14.243 14.243M5.757 5.757L4.343 4.343" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <svg class="theme-icon moon-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+    <div class="config">
+  <h2 onclick="toggleConfigSection('config')" style="cursor: pointer; user-select: none;">
+    ⚙️ Configuration
+    <span id="config-toggle" class="config-toggle-icon">▼</span>
+  </h2>
+  <div id="config-section" class="config-collapsible">
+    <div class="config-list">
+      <div class="config-item">
+        <div class="config-label">Input File:</div>
+        <div class="input-file-row">
+          <code class="config-value">requests.json</code>
+          <button class="download-input-btn" onclick="downloadInputJson()" title="Download Input JSON">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download Input JSON
+          </button>
+        </div>
+      </div>
+            <div class="config-item">
+        <div class="config-label">Reference URL:</div>
+        <code class="config-value">https://api.example.com/v1</code>
+      </div>
+                  <div class="config-item">
+        <div class="config-label">Target URL:</div>
+        <code class="config-value">https://api.example.com/v2</code>
+      </div>
+          </div>
+  </div>
+
+  <h2 onclick="toggleConfigSection('command')" style="cursor: pointer; user-select: none;">
+    💻 Command Line
+    <span id="command-toggle" class="config-toggle-icon">▼</span>
+  </h2>
+  <div id="command-section" class="config-collapsible">
+    <div class="command-line">
+      <button class="copy-button" onclick="copyCommandLine(event)" title="Copy to clipboard">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
+      <code id="command-line-text">api-comparator compare --input-file requests.json --reference-base-url https://api.example.com/v1 --target-base-url https://api.example.com/v2</code>
+    </div>
+  </div>
+</div>
+    
+<div class="results">
+  <div class="results-header">
+    <h2>📊 Results</h2>
+    <button class="download-json-btn" onclick="downloadJson()" title="Download JSON Report">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Download Report as JSON
+    </button>
+  </div>
+  
+  <div class="filter-tabs">
+    <button class="filter-tab active" data-filter="all" onclick="filterResults('all')">
+      <span class="tab-number">2</span>
+      <span class="tab-label">Total Requests</span>
+    </button>
+    <button class="filter-tab" data-filter="passed" onclick="filterResults('passed')">
+      <span class="tab-number">1</span>
+      <span class="tab-label">Passed (50.0%)</span>
+    </button>
+    <button class="filter-tab" data-filter="passed-with-errors" onclick="filterResults('passed-with-errors')">
+      <span class="tab-number">0</span>
+      <span class="tab-label">Passed with Errors</span>
+    </button>
+    <button class="filter-tab" data-filter="failed" onclick="filterResults('failed')">
+      <span class="tab-number">1</span>
+      <span class="tab-label">Failed</span>
+    </button>
+  </div>
+  
+  <div id="results-container">
+          
+<div class="result-item passed " id="result-0">
+  <div class="result-header" onclick="toggleResult(0)">
+    <span class="result-status">✅</span>
+    <div class="result-content">
+      <div class="result-name">
+        <span class="result-method method-GET">GET</span>
+                  <span class="url-text url-selectable">/users/123</span>
+              </div>
+      <div class="result-timing">
+        <span>Reference: <strong class="status-code-ok">200 OK</strong> / 45ms</span>
+        <span>Target: <strong class="status-code-ok">200 OK</strong> / 39ms</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="result-details">
+    <div class="result-details-content">
+      
+            
+      <div class="request-details">
+        <div class="request-details-side">
+          <div class="request-details-header">
+            <span class="request-details-title">Reference Request</span>
+            <button class="copy-curl-btn" onclick="copyCurlCommand(event, 'ref-0')" title="Copy as cURL">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy cURL
+            </button>
+            <textarea id="curl-ref-0" style="display: none;">curl -X GET &#39;https://api.example.com/v1/users/123&#39;</textarea>
+          </div>
+          <div class="request-http-container">
+            <div class="command-line">
+              <button class="copy-button" onclick="copyHttpRequest(event, 'ref-0')" title="Copy Request">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+              <code>GET https://api.example.com/v1/users/123</code>
+            </div>
+            <textarea id="http-ref-0" style="display: none;">GET https://api.example.com/v1/users/123</textarea>
+          </div>
+        </div>
+        
+        <div class="request-details-side">
+          <div class="request-details-header">
+            <span class="request-details-title">Target Request</span>
+            <button class="copy-curl-btn" onclick="copyCurlCommand(event, 'target-0')" title="Copy as cURL">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy cURL
+            </button>
+            <textarea id="curl-target-0" style="display: none;">curl -X GET &#39;https://api.example.com/v2/users/123&#39;</textarea>
+          </div>
+          <div class="request-http-container">
+            <div class="command-line">
+              <button class="copy-button" onclick="copyHttpRequest(event, 'target-0')" title="Copy Request">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+              <code>GET https://api.example.com/v2/users/123</code>
+            </div>
+            <textarea id="http-target-0" style="display: none;">GET https://api.example.com/v2/users/123</textarea>
+          </div>
+        </div>
+      </div>
+      
+            <div class="no-differences">
+        <div class="diff-message">✅ No differences</div>
+              </div>
+        
+        </div>
+  </div>
+</div>
+          
+<div class="result-item failed " id="result-1">
+  <div class="result-header" onclick="toggleResult(1)">
+    <span class="result-status">❌</span>
+    <div class="result-content">
+      <div class="result-name">
+        <span class="result-method method-GET">GET</span>
+                  <span class="url-text url-selectable">/orders/456</span>
+              </div>
+      <div class="result-timing">
+        <span>Reference: <strong class="status-code-ok">200 OK</strong> / 53ms</span>
+        <span>Target: <strong class="status-code-ok">200 OK</strong> / 41ms</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="result-details">
+    <div class="result-details-content">
+      
+            
+      <div class="request-details">
+        <div class="request-details-side">
+          <div class="request-details-header">
+            <span class="request-details-title">Reference Request</span>
+            <button class="copy-curl-btn" onclick="copyCurlCommand(event, 'ref-1')" title="Copy as cURL">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy cURL
+            </button>
+            <textarea id="curl-ref-1" style="display: none;">curl -X GET &#39;https://api.example.com/v1/orders/456&#39;</textarea>
+          </div>
+          <div class="request-http-container">
+            <div class="command-line">
+              <button class="copy-button" onclick="copyHttpRequest(event, 'ref-1')" title="Copy Request">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+              <code>GET https://api.example.com/v1/orders/456</code>
+            </div>
+            <textarea id="http-ref-1" style="display: none;">GET https://api.example.com/v1/orders/456</textarea>
+          </div>
+        </div>
+        
+        <div class="request-details-side">
+          <div class="request-details-header">
+            <span class="request-details-title">Target Request</span>
+            <button class="copy-curl-btn" onclick="copyCurlCommand(event, 'target-1')" title="Copy as cURL">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy cURL
+            </button>
+            <textarea id="curl-target-1" style="display: none;">curl -X GET &#39;https://api.example.com/v2/orders/456&#39;</textarea>
+          </div>
+          <div class="request-http-container">
+            <div class="command-line">
+              <button class="copy-button" onclick="copyHttpRequest(event, 'target-1')" title="Copy Request">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+              <code>GET https://api.example.com/v2/orders/456</code>
+            </div>
+            <textarea id="http-target-1" style="display: none;">GET https://api.example.com/v2/orders/456</textarea>
+          </div>
+        </div>
+      </div>
+      
+            <div class="differences">
+                  <div class="diff-item">
+            <div class="diff-message">Response body differs (strict comparison)</div>
+                          <div class="diff-view">
+                <div class="diff-side">
+                  <div class="diff-side-header">Expected (Reference)</div>
+                  <div class="diff-content">
+                    <code><span class="diff-line"><span class="diff-line-number">1</span>{</span>
+<span class="diff-line"><span class="diff-line-number">2</span>  "orderId": 456,</span>
+<span class="diff-line"><span class="diff-line-number">3</span>  "customerId": 123,</span>
+<span class="diff-line"><span class="diff-line-number">4</span>  "items": [</span>
+<span class="diff-line"><span class="diff-line-number">5</span>    {</span>
+<span class="diff-line"><span class="diff-line-number">6</span>      "productId": 789,</span>
+<span class="diff-line"><span class="diff-line-number">7</span>      "quantity": 2,</span>
+<span class="diff-line diff-line-removed"><span class="diff-line-number">8</span>      "price": 29.99</span>
+<span class="diff-line diff-line-empty"><span class="diff-line-number"></span> </span>
+<span class="diff-line"><span class="diff-line-number">9</span>    }</span>
+<span class="diff-line"><span class="diff-line-number">10</span>  ],</span>
+<span class="diff-line diff-line-removed"><span class="diff-line-number">11</span>  "total": 59.98,</span>
+<span class="diff-line diff-line-removed"><span class="diff-line-number">12</span>  "status": "shipped"</span>
+<span class="diff-line diff-line-empty"><span class="diff-line-number"></span> </span>
+<span class="diff-line diff-line-empty"><span class="diff-line-number"></span> </span>
+<span class="diff-line diff-line-empty"><span class="diff-line-number"></span> </span>
+<span class="diff-line"><span class="diff-line-number">13</span>}</span></code>
+                  </div>
+                </div>
+                <div class="diff-side">
+                  <div class="diff-side-header">Actual (Target)</div>
+                  <div class="diff-content">
+                    <code><span class="diff-line"><span class="diff-line-number">1</span>{</span>
+<span class="diff-line"><span class="diff-line-number">2</span>  "orderId": 456,</span>
+<span class="diff-line"><span class="diff-line-number">3</span>  "customerId": 123,</span>
+<span class="diff-line"><span class="diff-line-number">4</span>  "items": [</span>
+<span class="diff-line"><span class="diff-line-number">5</span>    {</span>
+<span class="diff-line"><span class="diff-line-number">6</span>      "productId": 789,</span>
+<span class="diff-line"><span class="diff-line-number">7</span>      "quantity": 2,</span>
+<span class="diff-line diff-line-empty"><span class="diff-line-number"></span> </span>
+<span class="diff-line diff-line-added"><span class="diff-line-number">8</span>      "unitPrice": 29.99</span>
+<span class="diff-line"><span class="diff-line-number">9</span>    }</span>
+<span class="diff-line"><span class="diff-line-number">10</span>  ],</span>
+<span class="diff-line diff-line-empty"><span class="diff-line-number"></span> </span>
+<span class="diff-line diff-line-empty"><span class="diff-line-number"></span> </span>
+<span class="diff-line diff-line-added"><span class="diff-line-number">11</span>  "totalAmount": 59.98,</span>
+<span class="diff-line diff-line-added"><span class="diff-line-number">12</span>  "orderStatus": "shipped",</span>
+<span class="diff-line diff-line-added"><span class="diff-line-number">13</span>  "createdAt": "2025-11-13T10:30:00Z"</span>
+<span class="diff-line"><span class="diff-line-number">14</span>}</span></code>
+                  </div>
+                </div>
+              </div>
+                      </div>
+              </div>
+        
+        </div>
+  </div>
+</div>
+      </div>
+</div>
+    <div class="footer">
+  Generated by <a href="https://github.com/paulwellnerbou/api-comparator" target="_blank" rel="noopener noreferrer">API Comparator</a> v1.1.1-dev.0</div>
+  </div>
+  <script>
+    function toggleResult(index) {
+  // Don't toggle if user is selecting text
+  const selection = window.getSelection();
+  if (selection && selection.toString().length > 0) {
+    return;
+  }
+  
+  const item = document.getElementById('result-' + index);
+  item.classList.toggle('expanded');
+}
+
+function toggleConfigSection(section) {
+  const content = document.getElementById(section + '-section');
+  const toggle = document.getElementById(section + '-toggle');
+  
+  content.classList.toggle('collapsed');
+  toggle.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
+}
+
+function filterResults(filter) {
+  const items = document.querySelectorAll('.result-item');
+  const tabs = document.querySelectorAll('.filter-tab');
+  
+  tabs.forEach(tab => tab.classList.remove('active'));
+  
+  // Find the correct tab button by filter attribute
+  const activeTab = document.querySelector(`.filter-tab[data-filter="${filter}"]`);
+  if (activeTab) {
+    activeTab.classList.add('active');
+  }
+  
+  items.forEach(item => {
+    if (filter === 'all') {
+      item.style.display = 'block';
+    } else if (filter === 'passed') {
+      item.style.display = item.classList.contains('passed') ? 'block' : 'none';
+    } else if (filter === 'passed-with-errors') {
+      item.style.display = item.classList.contains('passed-with-errors') ? 'block' : 'none';
+    } else if (filter === 'failed') {
+      item.style.display = item.classList.contains('failed') ? 'block' : 'none';
+    }
+  });
+}
+
+function copyCommandLine(event) {
+  const commandText = document.getElementById('command-line-text').textContent;
+  
+  navigator.clipboard.writeText(commandText).then(() => {
+    console.log('✅ Copy successful!');
+    const button = event.target.closest('.copy-button');
+    const originalHTML = button.innerHTML;
+    
+    // Show checkmark
+    button.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 4L6 11.5L2.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    button.style.background = '#10b981';
+    
+    // Reset after 2 seconds
+    setTimeout(() => {
+      button.innerHTML = originalHTML;
+      button.style.background = '#667eea';
+    }, 2000);
+  }).catch(err => {
+    console.error('❌ Error:', err);
+  });
+}
+
+function copyCurlCommand(event, curlId) {
+  const curlText = document.getElementById('curl-' + curlId).value;
+  
+  navigator.clipboard.writeText(curlText).then(() => {
+    const button = event.target.closest('.copy-curl-btn');
+    const originalHTML = button.innerHTML;
+    
+    // Show checkmark
+    button.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 4L6 11.5L2.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied!';
+    button.style.background = '#10b981';
+    
+    // Reset after 2 seconds
+    setTimeout(() => {
+      button.innerHTML = originalHTML;
+      button.style.background = '#667eea';
+    }, 2000);
+  }).catch(err => {
+    console.error('❌ Error:', err);
+  });
+}
+
+function copyHttpRequest(event, httpId) {
+  const httpText = document.getElementById('http-' + httpId).value;
+  
+  navigator.clipboard.writeText(httpText).then(() => {
+    const button = event.target.closest('.copy-button');
+    const originalHTML = button.innerHTML;
+    
+    // Show checkmark
+    button.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 4L6 11.5L2.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    button.style.background = '#10b981';
+    
+    // Reset after 2 seconds
+    setTimeout(() => {
+      button.innerHTML = originalHTML;
+      button.style.background = '#667eea';
+    }, 2000);
+  }).catch(err => {
+    console.error('❌ Error:', err);
+  });
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  html.setAttribute('data-theme', newTheme);
+}
+
+// Initialize theme on page load based on system preference
+(function() {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+})();
+
+// Embedded JSON report data
+const reportData = {"timestamp":"2025-11-13T12:00:00.000Z","commandLine":"api-comparator compare --input-file requests.json --reference-base-url https://api.example.com/v1 --target-base-url https://api.example.com/v2","options":{"inputFileType":"generic","action":"compare","inputFile":"requests.json","referenceBaseUrl":"https://api.example.com/v1","targetBaseUrl":"https://api.example.com/v2","noTimestampInReportFilenames":true},"inputRequests":[{"name":"Get User Profile","method":"GET","url":"/users/123","headers":{"Accept":"application/json"}},{"name":"Get Order Details","method":"GET","url":"/orders/456","headers":{"Accept":"application/json"}}],"summary":{"total":2,"passed":1,"failed":1},"results":[{"name":"Get User Profile","method":"GET","url":"/users/123","referenceBaseUrl":"https://api.example.com/v1","targetBaseUrl":"https://api.example.com/v2","reference":{"statusCode":200,"statusText":"OK","body":{"id":123,"name":"John Doe","email":"john.doe@example.com","status":"active"},"duration":45.2},"target":{"statusCode":200,"statusText":"OK","body":{"id":123,"name":"John Doe","email":"john.doe@example.com","status":"active"},"duration":38.7},"differences":[]},{"name":"Get Order Details","method":"GET","url":"/orders/456","referenceBaseUrl":"https://api.example.com/v1","targetBaseUrl":"https://api.example.com/v2","reference":{"statusCode":200,"statusText":"OK","body":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"price":29.99}],"total":59.98,"status":"shipped"},"duration":52.8},"target":{"statusCode":200,"statusText":"OK","body":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"unitPrice":29.99}],"totalAmount":59.98,"orderStatus":"shipped","createdAt":"2025-11-13T10:30:00Z"},"duration":41.3},"differences":[{"type":"body","message":"Response body differs (strict comparison)","expected":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"price":29.99}],"total":59.98,"status":"shipped"},"actual":{"orderId":456,"customerId":123,"items":[{"productId":789,"quantity":2,"unitPrice":29.99}],"totalAmount":59.98,"orderStatus":"shipped","createdAt":"2025-11-13T10:30:00Z"},"diffBlocks":[{"lines":[{"left":{"type":"unchanged","content":"{","lineNumber":1},"right":{"type":"unchanged","content":"{","lineNumber":1}},{"left":{"type":"unchanged","content":"  \"orderId\": 456,","lineNumber":2},"right":{"type":"unchanged","content":"  \"orderId\": 456,","lineNumber":2}},{"left":{"type":"unchanged","content":"  \"customerId\": 123,","lineNumber":3},"right":{"type":"unchanged","content":"  \"customerId\": 123,","lineNumber":3}},{"left":{"type":"unchanged","content":"  \"items\": [","lineNumber":4},"right":{"type":"unchanged","content":"  \"items\": [","lineNumber":4}},{"left":{"type":"unchanged","content":"    {","lineNumber":5},"right":{"type":"unchanged","content":"    {","lineNumber":5}},{"left":{"type":"unchanged","content":"      \"productId\": 789,","lineNumber":6},"right":{"type":"unchanged","content":"      \"productId\": 789,","lineNumber":6}},{"left":{"type":"unchanged","content":"      \"quantity\": 2,","lineNumber":7},"right":{"type":"unchanged","content":"      \"quantity\": 2,","lineNumber":7}},{"left":{"type":"removed","content":"      \"price\": 29.99","lineNumber":8},"right":null},{"left":null,"right":{"type":"added","content":"      \"unitPrice\": 29.99","lineNumber":8}},{"left":{"type":"unchanged","content":"    }","lineNumber":9},"right":{"type":"unchanged","content":"    }","lineNumber":9}},{"left":{"type":"unchanged","content":"  ],","lineNumber":10},"right":{"type":"unchanged","content":"  ],","lineNumber":10}},{"left":{"type":"removed","content":"  \"total\": 59.98,","lineNumber":11},"right":null},{"left":{"type":"removed","content":"  \"status\": \"shipped\"","lineNumber":12},"right":null},{"left":null,"right":{"type":"added","content":"  \"totalAmount\": 59.98,","lineNumber":11}},{"left":null,"right":{"type":"added","content":"  \"orderStatus\": \"shipped\",","lineNumber":12}},{"left":null,"right":{"type":"added","content":"  \"createdAt\": \"2025-11-13T10:30:00Z\"","lineNumber":13}},{"left":{"type":"unchanged","content":"}","lineNumber":13},"right":{"type":"unchanged","content":"}","lineNumber":14}}],"skipped":false}]}]}]};
+
+function downloadJson() {
+  const dataStr = JSON.stringify(reportData, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'comparison-report-' + new Date(reportData.timestamp).toISOString().split('T')[0] + '.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function downloadInputJson() {
+  const dataStr = JSON.stringify(reportData.inputRequests, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'input-requests-' + new Date(reportData.timestamp).toISOString().split('T')[0] + '.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+  </script>
+</body>
+</html>

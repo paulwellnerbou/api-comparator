@@ -59,8 +59,26 @@
         return curl;
       }
       
+      // Build REST Client (.http) format
+      function buildHttpRequest(url, method, headers, body) {
+        let http = `${method} ${url}`;
+        if (headers && Object.keys(headers).length > 0) {
+          for (const [key, value] of Object.entries(headers)) {
+            http += `\n${key}: ${value}`;
+          }
+        }
+        if (body && method !== 'GET' && method !== 'HEAD') {
+          http += '\n\n';
+          const bodyStr = typeof body === 'object' ? JSON.stringify(body, null, 2) : String(body);
+          http += bodyStr;
+        }
+        return http;
+      }
+      
       const refCurl = buildCurlCommand(refUrl, method, it.result.referenceRequestHeaders, it.result.requestBody);
       const targetCurl = buildCurlCommand(targetUrl, method, it.result.targetRequestHeaders, it.result.requestBody);
+      const refHttp = buildHttpRequest(refUrl, method, it.result.referenceRequestHeaders, it.result.requestBody);
+      const targetHttp = buildHttpRequest(targetUrl, method, it.result.targetRequestHeaders, it.result.requestBody);
       %>
       
       <div class="request-details">
@@ -76,30 +94,18 @@
             </button>
             <textarea id="curl-ref-<%= it.index %>" style="display: none;"><%= refCurl %></textarea>
           </div>
-          <div class="request-detail-item">
-            <div class="request-detail-label">URL:</div>
-            <code class="request-detail-value"><%= refUrl %></code>
+          <div class="request-http-container">
+            <div class="command-line">
+              <button class="copy-button" onclick="copyHttpRequest(event, 'ref-<%= it.index %>')" title="Copy Request">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+              <code><%= refHttp %></code>
+            </div>
+            <textarea id="http-ref-<%= it.index %>" style="display: none;"><%= refHttp %></textarea>
           </div>
-          <% if (it.result.referenceRequestHeaders && Object.keys(it.result.referenceRequestHeaders).length > 0) { %>
-          <div class="request-detail-item">
-            <div class="request-detail-label">Headers:</div>
-            <code class="request-detail-value request-headers"><%
-              const headerEntries = Object.entries(it.result.referenceRequestHeaders);
-              for (let i = 0; i < headerEntries.length; i++) {
-                const [key, value] = headerEntries[i];
-                if (i > 0) { %><%= '\n' %><% }
-                %><%= key %>: <%= value %><%
-              }
-            %></code>
-          </div>
-          <% } %>
-          
-          <% if (it.result.requestBody) { %>
-          <div class="request-detail-item">
-            <div class="request-detail-label">Body:</div>
-            <code class="request-detail-value request-body"><%= typeof it.result.requestBody === 'string' ? it.result.requestBody : JSON.stringify(it.result.requestBody, null, 2) %></code>
-          </div>
-          <% } %>
         </div>
         
         <div class="request-details-side">
@@ -114,30 +120,18 @@
             </button>
             <textarea id="curl-target-<%= it.index %>" style="display: none;"><%= targetCurl %></textarea>
           </div>
-          <div class="request-detail-item">
-            <div class="request-detail-label">URL:</div>
-            <code class="request-detail-value"><%= targetUrl %></code>
+          <div class="request-http-container">
+            <div class="command-line">
+              <button class="copy-button" onclick="copyHttpRequest(event, 'target-<%= it.index %>')" title="Copy Request">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+              <code><%= targetHttp %></code>
+            </div>
+            <textarea id="http-target-<%= it.index %>" style="display: none;"><%= targetHttp %></textarea>
           </div>
-          <% if (it.result.targetRequestHeaders && Object.keys(it.result.targetRequestHeaders).length > 0) { %>
-          <div class="request-detail-item">
-            <div class="request-detail-label">Headers:</div>
-            <code class="request-detail-value request-headers"><%
-              const targetHeaderEntries = Object.entries(it.result.targetRequestHeaders);
-              for (let i = 0; i < targetHeaderEntries.length; i++) {
-                const [key, value] = targetHeaderEntries[i];
-                if (i > 0) { %><%= '\n' %><% }
-                %><%= key %>: <%= value %><%
-              }
-            %></code>
-          </div>
-          <% } %>
-          
-          <% if (it.result.requestBody) { %>
-          <div class="request-detail-item">
-            <div class="request-detail-label">Body:</div>
-            <code class="request-detail-value request-body"><%= typeof it.result.requestBody === 'string' ? it.result.requestBody : JSON.stringify(it.result.requestBody, null, 2) %></code>
-          </div>
-          <% } %>
         </div>
       </div>
       
