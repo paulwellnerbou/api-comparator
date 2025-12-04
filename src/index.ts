@@ -5,7 +5,7 @@ import { parseGenericFile, parseRestfoxFile } from "./parser";
 import { makeRequest, compareResponses } from "./comparator";
 import { generateReport, printSummary } from "./reporter";
 import { generateHtmlReport } from "./html-reporter";
-import type { ComparisonReport, ComparisonResult, GenericRequest } from "./types";
+import type { ComparisonReport, ComparisonResult, GenericRequest, StructuredRequestFile } from "./types";
 
 async function main() {
   console.log("API Comparator v1.0.0\n");
@@ -43,9 +43,12 @@ async function runCompare(options: any) {
   let targetVariables: Record<string, any> = {};
   let referenceConfigHeaders: Record<string, string> = {};
   let targetConfigHeaders: Record<string, string> = {};
+  let inputFile: StructuredRequestFile;
   
   if (options.inputFileType === "restfox") {
     requests = await parseRestfoxFile(options.inputFile);
+    // For Restfox, create a structured format without configuration
+    inputFile = { requests };
   } else {
     const parsed = await parseGenericFile(options.inputFile);
     requests = parsed.requests;
@@ -53,6 +56,8 @@ async function runCompare(options: any) {
     targetVariables = parsed.configuration.targetVariables;
     referenceConfigHeaders = parsed.configuration.referenceHeaders;
     targetConfigHeaders = parsed.configuration.targetHeaders;
+    // Store the full structured format
+    inputFile = parsed.structuredFile;
   }
   
   // Apply limit if specified
@@ -163,7 +168,8 @@ async function runCompare(options: any) {
     timestamp: new Date().toISOString(),
     commandLine,
     options,
-    inputRequests: requests,  // Include the input requests in generic format
+    inputRequests: requests,  // Deprecated: kept for backward compatibility
+    inputFile,  // Full structured format
     results,
     inputFileName,
     reportBaseName: '', // Will be set below based on output path

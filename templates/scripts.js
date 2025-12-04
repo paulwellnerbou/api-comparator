@@ -137,7 +137,9 @@ function downloadJson() {
 }
 
 function downloadInputJson() {
-  const dataStr = JSON.stringify(reportData.inputRequests, null, 2);
+  // Use inputFile (new structured format) if available, otherwise fall back to inputRequests (legacy)
+  const dataToDownload = reportData.inputFile || reportData.inputRequests;
+  const dataStr = JSON.stringify(dataToDownload, null, 2);
   const dataBlob = new Blob([dataStr], { type: 'application/json' });
   const url = URL.createObjectURL(dataBlob);
   const link = document.createElement('a');

@@ -191,7 +191,8 @@ export interface ComparisonReport {
   commandLine: string;
   options: Partial<CliOptions>;
   results: ComparisonResult[];
-  inputRequests: GenericRequest[];
+  inputRequests: GenericRequest[];  // Deprecated: kept for backward compatibility
+  inputFile: StructuredRequestFile;  // Full structured input file with configuration
   inputFileName?: string;
   reportBaseName?: string;
 }

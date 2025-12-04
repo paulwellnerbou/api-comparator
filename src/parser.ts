@@ -3,7 +3,7 @@ import type { GenericRequest, RestfoxExport, RestfoxRequest, StructuredRequestFi
 /**
  * Parse a generic JSON file - supports both legacy array format and new structured format
  */
-export async function parseGenericFile(filePath: string): Promise<{ requests: GenericRequest[], configuration: ParsedConfiguration }> {
+export async function parseGenericFile(filePath: string): Promise<{ requests: GenericRequest[], configuration: ParsedConfiguration, structuredFile: StructuredRequestFile }> {
   const file = Bun.file(filePath);
   const content = await file.text();
   const data = JSON.parse(content);
@@ -12,7 +12,7 @@ export async function parseGenericFile(filePath: string): Promise<{ requests: Ge
   if (data && typeof data === 'object' && 'requests' in data && Array.isArray(data.requests)) {
     const structured = data as StructuredRequestFile;
     const configuration = parseConfiguration(structured.configuration);
-    return { requests: structured.requests, configuration };
+    return { requests: structured.requests, configuration, structuredFile: structured };
   }
   
   // Legacy format: just an array of requests
@@ -23,7 +23,11 @@ export async function parseGenericFile(filePath: string): Promise<{ requests: Ge
       referenceHeaders: {},
       targetHeaders: {}
     };
-    return { requests: data as GenericRequest[], configuration };
+    // Convert legacy format to structured format
+    const structuredFile: StructuredRequestFile = {
+      requests: data as GenericRequest[]
+    };
+    return { requests: data as GenericRequest[], configuration, structuredFile };
   }
 
   throw new Error("Generic JSON file must be either an array of requests (legacy) or an object with 'requests' property (new format)");
