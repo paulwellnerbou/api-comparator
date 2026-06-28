@@ -36,6 +36,38 @@ function getStatusText(statusCode: number): string {
 }
 
 /**
+ * Replace occurrences of the given URLs in a value recursively.
+ * Pass an empty replacement to strip them; pass "{{baseUrl}}" to normalize them.
+ */
+function replaceUrlsInValue(value: unknown, urls: string[], replacement: string): unknown {
+  if (urls.length === 0) return value;
+
+  if (typeof value === 'string') {
+    let result = value;
+    for (const url of urls) {
+      if (url) {
+        result = result.split(url).join(replacement);
+      }
+    }
+    return result;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(item => replaceUrlsInValue(item, urls, replacement));
+  }
+
+  if (value !== null && typeof value === 'object') {
+    const result: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
+      result[key] = replaceUrlsInValue(val, urls, replacement);
+    }
+    return result;
+  }
+
+  return value;
+}
+
+/**
  * Make an HTTP request and return the response details
  */
 export async function makeRequest(
@@ -44,7 +76,9 @@ export async function makeRequest(
   variables: Record<string, any> = {},
   headerReplacements: Record<string, string> = {},
   additionalHeaders: Record<string, string> = {},
-  urlType: 'reference' | 'target' = 'reference'
+  urlType: 'reference' | 'target' = 'reference',
+  urlsToReplace: string[] = [],
+  urlReplacement: string = ''
 ): Promise<ApiResponse> {
   // Determine which URL to use: referenceUrl/targetUrl if specified, otherwise use url with baseUrl replacement
   let url: string;
@@ -117,6 +151,9 @@ export async function makeRequest(
     } else {
       responseBody = await response.text();
     }
+
+    // Strip or normalize URLs in response body if requested
+    responseBody = replaceUrlsInValue(responseBody, urlsToReplace, urlReplacement);
 
     return {
       statusCode: response.status,

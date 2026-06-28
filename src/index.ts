@@ -21,22 +21,6 @@ async function main() {
 }
 
 async function runCompare(options: any) {
-  console.log("Configuration:");
-  console.log(`  Input file:        ${options.inputFile}`);
-  console.log(`  Input file type:   ${options.inputFileType}`);
-  console.log(`  Reference URL:     ${options.referenceBaseUrl}`);
-  console.log(`  Target URL:        ${options.targetBaseUrl}`);
-  if (options.referenceHeaders && Object.keys(options.referenceHeaders).length > 0) {
-    console.log(`  Reference headers: ${JSON.stringify(options.referenceHeaders)}`);
-  }
-  if (options.targetHeaders && Object.keys(options.targetHeaders).length > 0) {
-    console.log(`  Target headers:    ${JSON.stringify(options.targetHeaders)}`);
-  }
-  if (options.limit) {
-    console.log(`  Limit:             ${options.limit}`);
-  }
-  console.log("");
-
   // Parse the input file - all formats are converted to GenericRequest[]
   let requests: GenericRequest[];
   let referenceVariables: Record<string, any> = {};
@@ -59,6 +43,32 @@ async function runCompare(options: any) {
     // Store the full structured format
     inputFile = parsed.structuredFile;
   }
+
+  // Resolve base URLs: CLI values override input-file configuration values
+  options.referenceBaseUrl = options.referenceBaseUrl || inputFile.configuration?.referenceBaseUrl;
+  options.targetBaseUrl = options.targetBaseUrl || inputFile.configuration?.targetBaseUrl;
+
+  if (!options.referenceBaseUrl || !options.targetBaseUrl) {
+    console.error("Error: reference and target base URLs are required.");
+    console.error("Provide --reference-base-url/--target-base-url, or set configuration.referenceBaseUrl and configuration.targetBaseUrl in the input file.");
+    process.exit(1);
+  }
+
+  console.log("Configuration:");
+  console.log(`  Input file:        ${options.inputFile}`);
+  console.log(`  Input file type:   ${options.inputFileType}`);
+  console.log(`  Reference URL:     ${options.referenceBaseUrl}`);
+  console.log(`  Target URL:        ${options.targetBaseUrl}`);
+  if (options.referenceHeaders && Object.keys(options.referenceHeaders).length > 0) {
+    console.log(`  Reference headers: ${JSON.stringify(options.referenceHeaders)}`);
+  }
+  if (options.targetHeaders && Object.keys(options.targetHeaders).length > 0) {
+    console.log(`  Target headers:    ${JSON.stringify(options.targetHeaders)}`);
+  }
+  if (options.limit) {
+    console.log(`  Limit:             ${options.limit}`);
+  }
+  console.log("");
   
   // Apply limit if specified
   if (options.limit && options.limit > 0) {
@@ -85,6 +95,15 @@ async function runCompare(options: any) {
     const mergedReferenceHeaders = { ...referenceConfigHeaders, ...(options.referenceHeaders || {}) };
     const mergedTargetHeaders = { ...targetConfigHeaders, ...(options.targetHeaders || {}) };
 
+    // Collect URLs to strip or normalize if option is set.
+    // normalize replaces base URLs with {{baseUrl}}; strip removes them.
+    const replaceBaseUrls = options.stripUrls || options.normalizeUrls;
+    const urlReplacement = options.normalizeUrls ? '{{baseUrl}}' : '';
+    const urlsToReplace = [
+      ...(replaceBaseUrls ? [options.referenceBaseUrl, options.targetBaseUrl] : []),
+      ...(options.stripMoreUrls || [])
+    ].filter(Boolean) as string[];
+
     // Make requests sequentially to avoid backend conflicts
     // (both APIs might share the same backend)
     const referenceResponse = await makeRequest(
@@ -93,7 +112,9 @@ async function runCompare(options: any) {
       referenceVariables,
       {},
       mergedReferenceHeaders,
-      'reference'
+      'reference',
+      urlsToReplace,
+      urlReplacement
     );
     const targetResponse = await makeRequest(
       request, 
@@ -101,7 +122,9 @@ async function runCompare(options: any) {
       targetVariables,
       {},
       mergedTargetHeaders,
-      'target'
+      'target',
+      urlsToReplace,
+      urlReplacement
     );
 
     // Compare the responses

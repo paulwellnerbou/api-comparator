@@ -23,6 +23,8 @@ export interface EnvironmentConfiguration {
  * Top-level configuration for requests file
  */
 export interface RequestFileConfiguration {
+  referenceBaseUrl?: string;
+  targetBaseUrl?: string;
   variables?: Record<string, any>;
   headers?: Record<string, string>;
   referenceConfiguration?: EnvironmentConfiguration;
@@ -179,6 +181,9 @@ export interface CliOptions {
   limit?: number;
   noTimestampInReportFilenames?: boolean;
   normalizedJsonComparison?: boolean;
+  stripUrls?: boolean;
+  normalizeUrls?: boolean;
+  stripMoreUrls?: string[];
   outputFile?: string;
   outputDir?: string;
 }

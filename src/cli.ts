@@ -96,6 +96,15 @@ export function parseArgs(args: string[]): CliOptions {
       case "--normalized-json-comparison":
         options.normalizedJsonComparison = true;
         break;
+      case "--strip-urls":
+        options.stripUrls = true;
+        break;
+      case "--normalize-urls":
+        options.normalizeUrls = true;
+        break;
+      case "--strip-more-urls":
+        options.stripMoreUrls = args[++i].split(',').map(u => u.trim()).filter(u => u.length > 0);
+        break;
       case "--output-file":
         options.outputFile = args[++i];
         break;
@@ -123,20 +132,6 @@ export function parseArgs(args: string[]): CliOptions {
     process.exit(1);
   }
 
-  if (options.action === "compare") {
-    if (!options.referenceBaseUrl) {
-      console.error("Error: --reference-base-url is required for 'compare' action");
-      printHelp();
-      process.exit(1);
-    }
-
-    if (!options.targetBaseUrl) {
-      console.error("Error: --target-base-url is required for 'compare' action");
-      printHelp();
-      process.exit(1);
-    }
-  }
-
   return options as CliOptions;
 }
 
@@ -157,8 +152,8 @@ Actions:
 Options for 'compare':
   --input-file <file>              Path to the JSON request file (required)
   --input-file-type <type>         Type of input file: 'generic' or 'restfox' (default: generic)
-  --reference-base-url <url>       Base URL for the reference/current API (required)
-  --target-base-url <url>          Base URL for the target/next API (required)
+  --reference-base-url <url>       Base URL for the reference/current API (optional if set in input file configuration)
+  --target-base-url <url>          Base URL for the target/next API (optional if set in input file configuration)
   --reference-headers <headers>    Headers to add to all reference requests (format: "Header1: value1, Header2: value2")
   --target-headers <headers>       Headers to add to all target requests (format: "Header1: value1, Header2: value2")
   --limit <number>                 Limit the number of URLs to compare
@@ -166,6 +161,9 @@ Options for 'compare':
   --output-dir <dir>               Output directory for reports (default: current directory)
   --no-timestamp-in-report-filenames   Omit timestamp from report filenames
   --normalized-json-comparison     Use normalized JSON comparison (ignore key order)
+  --strip-urls                     Remove reference/target base URLs from report to hide URL differences
+  --normalize-urls                 Replace reference/target base URLs with {{baseUrl}} to hide URL differences
+  --strip-more-urls <urls>         Additional URLs to strip/normalize from responses (comma-separated)
 
 Options for 'report':
   --input-file <file>              Path to the JSON comparison report (required)

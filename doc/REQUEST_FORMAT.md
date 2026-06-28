@@ -9,6 +9,8 @@ The structured format allows you to define variables and headers at the top leve
 ```json
 {
   "configuration": {
+    "referenceBaseUrl": "http://localhost:8080",
+    "targetBaseUrl": "http://localhost:8081",
     "variables": {
       "apiVersion": "v1",
       "commonParam": "shared-value"
@@ -62,6 +64,10 @@ The structured format allows you to define variables and headers at the top leve
 #### `configuration` (optional)
 Top-level configuration that applies to all requests.
 
+- **`referenceBaseUrl`** (optional): Base URL for the reference environment. Used when `--reference-base-url` is not provided on CLI.
+
+- **`targetBaseUrl`** (optional): Base URL for the target environment. Used when `--target-base-url` is not provided on CLI.
+
 - **`variables`** (optional): Key-value pairs for variable replacement. Variables can be used in URLs, headers, and body using `{{variableName}}` syntax.
 
 - **`headers`** (optional): Headers that will be sent with all requests to both reference and target environments.
@@ -88,7 +94,9 @@ Variables are replaced in:
 
 2. **Configuration + CLI**: Headers and variables from command-line arguments override those from the configuration file.
 
-3. **Request + Configuration**: Headers defined in individual requests are merged with configuration headers, with request headers taking precedence.
+3. **Base URL source**: `--reference-base-url` / `--target-base-url` override `configuration.referenceBaseUrl` / `configuration.targetBaseUrl`.
+
+4. **Request + Configuration**: Headers defined in individual requests are merged with configuration headers, with request headers taking precedence.
 
 ## Legacy Array Format (Still Supported)
 

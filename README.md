@@ -70,8 +70,8 @@ The HTML report will be generated in the same directory as the JSON file with th
 |--------|-------------|----------|
 | `--input-file <file>` | Path to the JSON request file | ✅ Yes |
 | `--input-file-type <type>` | Type of input file: `generic` (default) or `restfox` | No |
-| `--reference-base-url <url>` | Base URL for the current/reference API | ✅ Yes |
-| `--target-base-url <url>` | Base URL for the next/target API | ✅ Yes |
+| `--reference-base-url <url>` | Base URL for the current/reference API (overrides JSON config) | No* |
+| `--target-base-url <url>` | Base URL for the next/target API (overrides JSON config) | No* |
 | `--reference-headers <headers>` | Headers to add to all reference requests (format: "Header1: value1, Header2: value2") | No |
 | `--target-headers <headers>` | Headers to add to all target requests (format: "Header1: value1, Header2: value2") | No |
 | `--limit <number>` | Limit the number of URLs to compare | No |
@@ -79,6 +79,9 @@ The HTML report will be generated in the same directory as the JSON file with th
 | `--output-dir <dir>` | Output directory for reports (default: current directory) | No |
 | `--no-timestamp-in-report-filenames` | Omit timestamp from report filenames | No |
 | `--normalized-json-comparison` | Use normalized JSON comparison (ignore key order) | No (default: false/strict) |
+| `--strip-urls` | Remove reference/target base URLs from responses to hide URL differences | No |
+| `--normalize-urls` | Replace reference/target base URLs with `{{baseUrl}}` to hide URL differences | No |
+| `--strip-more-urls <urls>` | Additional URLs to strip/normalize from responses (comma-separated) | No |
 
 **For `report` action:**
 
@@ -94,6 +97,8 @@ The HTML report will be generated in the same directory as the JSON file with th
 |--------|-------------|
 | `--help, -h` | Show help message |
 
+\* Required unless both `configuration.referenceBaseUrl` and `configuration.targetBaseUrl` are set in the input file.
+
 ## Input Format
 
 The tool supports two input formats for defining requests. For complete documentation with examples, see **[REQUEST_FORMAT.md](./doc/REQUEST_FORMAT.md)**.
@@ -105,6 +110,8 @@ The tool supports two input formats for defining requests. For complete document
 ```json
 {
   "configuration": {
+    "referenceBaseUrl": "http://localhost:8080",
+    "targetBaseUrl": "http://localhost:8081",
     "variables": {
       "apiVersion": "v1"
     },
