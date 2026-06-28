@@ -68,7 +68,14 @@ body {
   margin: 0;
 }
 
-.theme-toggle {
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.theme-toggle,
+.github-link {
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
@@ -81,9 +88,19 @@ body {
   transition: all 0.2s;
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.github-link:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: scale(1.05);
+}
+
+.github-link {
+  color: white;
+}
+
+.github-link svg {
+  width: 16px;
+  height: 16px;
 }
 
 .theme-toggle svg {
