@@ -33,10 +33,22 @@
         <code class="config-value"><%= it.report.options.referenceBaseUrl %></code>
       </div>
       <% } %>
+      <% if (it.report.options.referenceName) { %>
+      <div class="config-item">
+        <div class="config-label">Reference Name:</div>
+        <code class="config-value"><%= it.report.options.referenceName %></code>
+      </div>
+      <% } %>
       <% if (it.report.options.targetBaseUrl) { %>
       <div class="config-item">
         <div class="config-label">Target URL:</div>
         <code class="config-value"><%= it.report.options.targetBaseUrl %></code>
+      </div>
+      <% } %>
+      <% if (it.report.options.targetName) { %>
+      <div class="config-item">
+        <div class="config-label">Target Name:</div>
+        <code class="config-value"><%= it.report.options.targetName %></code>
       </div>
       <% } %>
     </div>

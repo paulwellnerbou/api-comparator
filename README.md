@@ -44,6 +44,21 @@ bun run dev -- compare \
   --target-headers "API-Key: abc456"
 ```
 
+### Name the Compared Environments
+
+Use `--reference-name` and `--target-name` to label the two sides in the report, for example with branch names or version labels:
+
+```shell
+bun run dev -- compare \
+  --input-file example-requests.json \
+  --reference-base-url https://api-current.example.com \
+  --target-base-url https://api-next.example.com \
+  --reference-name main \
+  --target-name release-1.2
+```
+
+The names appear in the report configuration section and in the per-side request panels.
+
 ### Generate HTML Report from JSON
 
 If you already have a JSON comparison report, you can generate just the HTML report:
@@ -72,6 +87,8 @@ The HTML report will be generated in the same directory as the JSON file with th
 | `--input-file-type <type>` | Type of input file: `generic` (default) or `restfox` | No |
 | `--reference-base-url <url>` | Base URL for the current/reference API (overrides JSON config) | No* |
 | `--target-base-url <url>` | Base URL for the next/target API (overrides JSON config) | No* |
+| `--reference-name <name>` | Display name for the current/reference API in the report | No |
+| `--target-name <name>` | Display name for the next/target API in the report | No |
 | `--reference-headers <headers>` | Headers to add to all reference requests (format: "Header1: value1, Header2: value2") | No |
 | `--target-headers <headers>` | Headers to add to all target requests (format: "Header1: value1, Header2: value2") | No |
 | `--limit <number>` | Limit the number of URLs to compare | No |

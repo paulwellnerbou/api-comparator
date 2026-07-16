@@ -5,7 +5,30 @@ import { parseGenericFile, parseRestfoxFile } from "./parser";
 import { makeRequest, compareResponses } from "./comparator";
 import { generateReport, printSummary } from "./reporter";
 import { generateHtmlReport } from "./html-reporter";
-import type { ComparisonReport, ComparisonResult, GenericRequest, StructuredRequestFile } from "./types";
+import type { ComparisonReport, ComparisonResult, GenericRequest, SentRequest, StructuredRequestFile } from "./types";
+
+function maskSensitiveHeaders(headers: Record<string, string>): Record<string, string> {
+  const maskedHeaders: Record<string, string> = {};
+
+  for (const [name, value] of Object.entries(headers)) {
+    if (/^(authorization|proxy-authorization)$/i.test(name)) {
+      maskedHeaders[name] = "***";
+    } else {
+      maskedHeaders[name] = value;
+    }
+  }
+
+  return maskedHeaders;
+}
+
+function maskSentRequest(request: SentRequest | undefined): SentRequest | undefined {
+  if (!request) return undefined;
+  return { ...request, headers: maskSensitiveHeaders(request.headers) };
+}
+
+function maskSensitiveCommandLine(commandLine: string): string {
+  return commandLine.replace(/(Authorization\s*:\s*)([^,\n"']+)/gi, "$1***");
+}
 
 async function main() {
   console.log("API Comparator v1.0.0\n");
@@ -59,6 +82,12 @@ async function runCompare(options: any) {
   console.log(`  Input file type:   ${options.inputFileType}`);
   console.log(`  Reference URL:     ${options.referenceBaseUrl}`);
   console.log(`  Target URL:        ${options.targetBaseUrl}`);
+  if (options.referenceName) {
+    console.log(`  Reference name:    ${options.referenceName}`);
+  }
+  if (options.targetName) {
+    console.log(`  Target name:       ${options.targetName}`);
+  }
   if (options.referenceHeaders && Object.keys(options.referenceHeaders).length > 0) {
     console.log(`  Reference headers: ${JSON.stringify(options.referenceHeaders)}`);
   }
@@ -68,7 +97,15 @@ async function runCompare(options: any) {
   if (options.limit) {
     console.log(`  Limit:             ${options.limit}`);
   }
+  if (options.from) {
+    console.log(`  From request #:    ${options.from}`);
+  }
   console.log("");
+
+  // Apply request offset if specified (1-based)
+  if (options.from && options.from > 1) {
+    requests = requests.slice(options.from - 1);
+  }
   
   // Apply limit if specified
   if (options.limit && options.limit > 0) {
@@ -143,9 +180,11 @@ async function runCompare(options: any) {
     const targetUrl = request.targetUrl;
 
     // Collect request headers and body (merge request headers with final headers)
-    const referenceRequestHeaders = { ...request.headers, ...mergedReferenceHeaders };
-    const targetRequestHeaders = { ...request.headers, ...mergedTargetHeaders };
+    const referenceRequestHeaders = maskSensitiveHeaders({ ...request.headers, ...mergedReferenceHeaders });
+    const targetRequestHeaders = maskSensitiveHeaders({ ...request.headers, ...mergedTargetHeaders });
     const requestBody = request.body;
+    const referenceSentRequest = maskSentRequest(referenceResponse.request);
+    const targetSentRequest = maskSentRequest(targetResponse.request);
 
     // Store the result
     results.push({
@@ -156,6 +195,8 @@ async function runCompare(options: any) {
       targetUrl,
       referenceBaseUrl: options.referenceBaseUrl,
       targetBaseUrl: options.targetBaseUrl,
+      referenceName: options.referenceName,
+      targetName: options.targetName,
       referenceRequestHeaders,
       targetRequestHeaders,
       requestBody,
@@ -165,6 +206,7 @@ async function runCompare(options: any) {
         body: referenceResponse.body,
         duration: referenceResponse.duration,
         error: referenceResponse.error,
+        request: referenceSentRequest,
       },
       target: {
         statusCode: targetResponse.statusCode,
@@ -172,6 +214,7 @@ async function runCompare(options: any) {
         body: targetResponse.body,
         duration: targetResponse.duration,
         error: targetResponse.error,
+        request: targetSentRequest,
       },
       differences,
     });
@@ -181,7 +224,7 @@ async function runCompare(options: any) {
 
   // Build command line string
   const args = process.argv.slice(2);
-  const commandLine = `bun run dev -- ${args.join(' ')}`;
+  const commandLine = maskSensitiveCommandLine(`bun run dev -- ${args.join(' ')}`);
 
   // Extract input filename without extension
   const inputFileName = options.inputFile.split('/').pop()?.replace(/\.[^/.]+$/, '') || 'report';

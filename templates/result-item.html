@@ -6,6 +6,8 @@
 <% const urlsDiffer = hasSpecificUrls && it.result.referenceUrl !== it.result.targetUrl; %>
 <% const displayReferenceUrl = it.result.referenceUrl ? it.result.referenceUrl.replace('{{baseUrl}}', '') : ''; %>
 <% const displayTargetUrl = it.result.targetUrl ? it.result.targetUrl.replace('{{baseUrl}}', '') : ''; %>
+<% const referenceLabel = it.result.referenceName || 'Reference'; %>
+<% const targetLabel = it.result.targetName || 'Target'; %>
 <% const fullDisplayUrl = displayUrl; %>
 
 <div class="result-item <%= passed ? 'passed' : 'failed' %> <%= passedWithErrors ? 'passed-with-errors' : '' %>" id="result-<%= it.index %>">
@@ -27,7 +29,8 @@
       </div>
       <div class="result-timing">
         <span>Reference: <strong class="<%= (it.result.reference.statusCode === 0 || it.result.reference.statusCode >= 400) ? 'status-code-error' : 'status-code-ok' %>"><%= it.result.reference.statusCode %> <%= it.result.reference.statusText %></strong> / <%= it.result.reference.duration.toFixed(0) %>ms</span>
-        <span>Target: <strong class="<%= (it.result.target.statusCode === 0 || it.result.target.statusCode >= 400) ? 'status-code-error' : 'status-code-ok' %>"><%= it.result.target.statusCode %> <%= it.result.target.statusText %></strong> / <%= it.result.target.duration.toFixed(0) %>ms</span>
+        <span><%= referenceLabel %>: <strong class="<%= (it.result.reference.statusCode === 0 || it.result.reference.statusCode >= 400) ? 'status-code-error' : 'status-code-ok' %>"><%= it.result.reference.statusCode %> <%= it.result.reference.statusText %></strong> / <%= it.result.reference.duration.toFixed(0) %>ms</span>
+        <span><%= targetLabel %>: <strong class="<%= (it.result.target.statusCode === 0 || it.result.target.statusCode >= 400) ? 'status-code-error' : 'status-code-ok' %>"><%= it.result.target.statusCode %> <%= it.result.target.statusText %></strong> / <%= it.result.target.duration.toFixed(0) %>ms</span>
       </div>
     </div>
   </div>
@@ -36,55 +39,74 @@
     <div class="result-details-content">
       
       <%
-      // Build full URLs
-      const refUrl = it.result.referenceUrl 
-        ? it.result.referenceBaseUrl + it.result.referenceUrl.replace('{{baseUrl}}', '')
-        : it.result.referenceBaseUrl + it.result.url.replace('{{baseUrl}}', '');
-      const targetUrl = it.result.targetUrl
-        ? it.result.targetBaseUrl + it.result.targetUrl.replace('{{baseUrl}}', '')
-        : it.result.targetBaseUrl + it.result.url.replace('{{baseUrl}}', '');
-      
+      // Reports from before per-side request capture have no result.<side>.request,
+      // so reconstruct an approximation from the raw input for those.
+      function legacySentRequest(sideBaseUrl, sideUrl, headers) {
+        const path = (sideUrl || it.result.url).replace('{{baseUrl}}', '');
+        const body = it.result.requestBody;
+        return {
+          url: sideBaseUrl + path,
+          method: method,
+          headers: headers,
+          body: (body && typeof body === 'object') ? JSON.stringify(body) : body,
+        };
+      }
+
+      const refSent = it.result.reference.request
+        || legacySentRequest(it.result.referenceBaseUrl, it.result.referenceUrl, it.result.referenceRequestHeaders);
+      const targetSent = it.result.target.request
+        || legacySentRequest(it.result.targetBaseUrl, it.result.targetUrl, it.result.targetRequestHeaders);
+
+      const refUrl = refSent.url;
+      const targetUrl = targetSent.url;
+
+      function hasBody(req) {
+        return req.body && req.method !== 'GET' && req.method !== 'HEAD';
+      }
+
       // Build curl commands
-      function buildCurlCommand(url, method, headers, body) {
-        let curl = `curl -X ${method} '${url}'`;
-        if (headers && Object.keys(headers).length > 0) {
-          for (const [key, value] of Object.entries(headers)) {
+      function buildCurlCommand(req) {
+        let curl = `curl -X ${req.method} '${req.url}'`;
+        if (req.headers && Object.keys(req.headers).length > 0) {
+          for (const [key, value] of Object.entries(req.headers)) {
             curl += ` \\\n  -H '${key}: ${value}'`;
           }
         }
-        if (body && method !== 'GET' && method !== 'HEAD') {
-          const bodyStr = typeof body === 'object' ? JSON.stringify(body) : String(body);
-          curl += ` \\\n  -d '${bodyStr.replace(/'/g, "'\\''")}'`;
+        if (hasBody(req)) {
+          curl += ` \\\n  -d '${String(req.body).replace(/'/g, "'\\''")}'`;
         }
         return curl;
       }
-      
+
       // Build REST Client (.http) format
-      function buildHttpRequest(url, method, headers, body) {
-        let http = `${method} ${url}`;
-        if (headers && Object.keys(headers).length > 0) {
-          for (const [key, value] of Object.entries(headers)) {
+      function buildHttpRequest(req) {
+        let http = `${req.method} ${req.url}`;
+        if (req.headers && Object.keys(req.headers).length > 0) {
+          for (const [key, value] of Object.entries(req.headers)) {
             http += `\n${key}: ${value}`;
           }
         }
-        if (body && method !== 'GET' && method !== 'HEAD') {
-          http += '\n\n';
-          const bodyStr = typeof body === 'object' ? JSON.stringify(body, null, 2) : String(body);
-          http += bodyStr;
+        if (hasBody(req)) {
+          // Pretty-print JSON bodies for readability; the curl above stays byte-exact
+          let bodyStr = String(req.body);
+          try {
+            bodyStr = JSON.stringify(JSON.parse(bodyStr), null, 2);
+          } catch (e) {}
+          http += '\n\n' + bodyStr;
         }
         return http;
       }
-      
-      const refCurl = buildCurlCommand(refUrl, method, it.result.referenceRequestHeaders, it.result.requestBody);
-      const targetCurl = buildCurlCommand(targetUrl, method, it.result.targetRequestHeaders, it.result.requestBody);
-      const refHttp = buildHttpRequest(refUrl, method, it.result.referenceRequestHeaders, it.result.requestBody);
-      const targetHttp = buildHttpRequest(targetUrl, method, it.result.targetRequestHeaders, it.result.requestBody);
+
+      const refCurl = buildCurlCommand(refSent);
+      const targetCurl = buildCurlCommand(targetSent);
+      const refHttp = buildHttpRequest(refSent);
+      const targetHttp = buildHttpRequest(targetSent);
       %>
       
       <div class="request-details">
         <div class="request-details-side">
           <div class="request-details-header">
-            <span class="request-details-title">Reference Request</span>
+            <span class="request-details-title"><%= referenceLabel %></span>
             <button class="copy-curl-btn" onclick="copyCurlCommand(event, 'ref-<%= it.index %>')" title="Copy as cURL">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -110,7 +132,7 @@
         
         <div class="request-details-side">
           <div class="request-details-header">
-            <span class="request-details-title">Target Request</span>
+            <span class="request-details-title"><%= targetLabel %></span>
             <button class="copy-curl-btn" onclick="copyCurlCommand(event, 'target-<%= it.index %>')" title="Copy as cURL">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>

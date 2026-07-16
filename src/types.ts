@@ -1,4 +1,9 @@
 /**
+ * Request body: a raw string, or JSON that gets stringified before sending
+ */
+export type RequestBody = string | unknown[] | Record<string, unknown> | undefined;
+
+/**
  * Generic request format (default)
  */
 export interface GenericRequest {
@@ -6,7 +11,7 @@ export interface GenericRequest {
   referenceUrl?: string;
   targetUrl?: string;
   method?: string;
-  body?: string | Record<string, unknown>;
+  body?: RequestBody;
   headers?: Record<string, string>;
   name?: string;  // Optional display name for the request
 }
@@ -100,6 +105,18 @@ export interface RestfoxRequest {
 }
 
 /**
+ * The request as it was actually put on the wire, after variable replacement
+ * and body serialization. Reported verbatim so the report cannot drift from
+ * what was really sent.
+ */
+export interface SentRequest {
+  url: string;
+  method: string;
+  headers: Record<string, string>;
+  body?: string;
+}
+
+/**
  * API response data
  */
 export interface ApiResponse {
@@ -108,6 +125,7 @@ export interface ApiResponse {
   body: unknown;
   duration: number;
   error?: string;
+  request?: SentRequest;
 }
 
 /**
@@ -121,6 +139,8 @@ export interface ComparisonResult {
   targetUrl?: string;
   referenceBaseUrl: string;
   targetBaseUrl: string;
+  referenceName?: string;
+  targetName?: string;
   referenceRequestHeaders?: Record<string, string>;
   targetRequestHeaders?: Record<string, string>;
   requestBody?: unknown;
@@ -131,6 +151,7 @@ export interface ComparisonResult {
     duration: number;
     error?: string;
     headers?: Record<string, string>;
+    request?: SentRequest;
   };
   target: {
     statusCode: number;
@@ -139,6 +160,7 @@ export interface ComparisonResult {
     duration: number;
     error?: string;
     headers?: Record<string, string>;
+    request?: SentRequest;
   };
   differences: Difference[];
 }
@@ -176,8 +198,11 @@ export interface CliOptions {
   inputFileType?: "generic" | "restfox";
   referenceBaseUrl?: string;
   targetBaseUrl?: string;
+  referenceName?: string;
+  targetName?: string;
   referenceHeaders?: Record<string, string>;
   targetHeaders?: Record<string, string>;
+  from?: number;
   limit?: number;
   noTimestampInReportFilenames?: boolean;
   normalizedJsonComparison?: boolean;

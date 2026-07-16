@@ -1,4 +1,4 @@
-import type { GenericRequest, RestfoxExport, RestfoxRequest, StructuredRequestFile, ParsedConfiguration } from "./types";
+import type { GenericRequest, RequestBody, RestfoxExport, RestfoxRequest, StructuredRequestFile, ParsedConfiguration } from "./types";
 
 /**
  * Parse a generic JSON file - supports both legacy array format and new structured format
@@ -123,26 +123,39 @@ export function replaceVariables(text: string, variables: Record<string, any>): 
 /**
  * Replace variables in request body (if it's a string or object with string values)
  */
-export function replaceVariablesInBody(body: string | Record<string, unknown> | undefined, variables: Record<string, any>): string | Record<string, unknown> | undefined {
+export function replaceVariablesInBody(body: RequestBody, variables: Record<string, any>): RequestBody {
   if (!body) return body;
-  
+
   if (typeof body === 'string') {
     return replaceVariables(body, variables);
   }
-  
-  // For objects, recursively replace in all string values
+
+  // Arrays must stay arrays: rebuilding them as objects would send {"0":...} instead of [...]
+  if (Array.isArray(body)) {
+    return body.map(item => replaceVariablesInValue(item, variables));
+  }
+
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(body)) {
-    if (typeof value === 'string') {
-      result[key] = replaceVariables(value, variables);
-    } else if (typeof value === 'object' && value !== null) {
-      result[key] = replaceVariablesInBody(value as Record<string, unknown>, variables);
-    } else {
-      result[key] = value;
-    }
+    result[key] = replaceVariablesInValue(value, variables);
   }
-  
+
   return result;
+}
+
+/**
+ * Replace variables in an arbitrary body value, preserving its type
+ */
+function replaceVariablesInValue(value: unknown, variables: Record<string, any>): unknown {
+  if (typeof value === 'string') {
+    return replaceVariables(value, variables);
+  }
+
+  if (value !== null && typeof value === 'object') {
+    return replaceVariablesInBody(value as RequestBody, variables);
+  }
+
+  return value;
 }
 
 /**

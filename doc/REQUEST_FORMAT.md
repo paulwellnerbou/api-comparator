@@ -68,6 +68,8 @@ Top-level configuration that applies to all requests.
 
 - **`targetBaseUrl`** (optional): Base URL for the target environment. Used when `--target-base-url` is not provided on CLI.
 
+- **Display names**: Use the CLI flags `--reference-name` and `--target-name` to label the reference and target environments in generated reports.
+
 - **`variables`** (optional): Key-value pairs for variable replacement. Variables can be used in URLs, headers, and body using `{{variableName}}` syntax.
 
 - **`headers`** (optional): Headers that will be sent with all requests to both reference and target environments.

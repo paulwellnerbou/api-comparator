@@ -81,11 +81,25 @@ export function parseArgs(args: string[]): CliOptions {
       case "--target-base-url":
         options.targetBaseUrl = args[++i];
         break;
+      case "--reference-name":
+        options.referenceName = args[++i];
+        break;
+      case "--target-name":
+        options.targetName = args[++i];
+        break;
       case "--reference-headers":
         options.referenceHeaders = parseHeaders(args[++i]);
         break;
       case "--target-headers":
         options.targetHeaders = parseHeaders(args[++i]);
+        break;
+      case "--from":
+      case "--start-at":
+        options.from = parseInt(args[++i], 10);
+        if (!Number.isInteger(options.from) || options.from < 1) {
+          console.error("Error: --from/--start-at must be a positive integer (1-based index)");
+          process.exit(1);
+        }
         break;
       case "--limit":
         options.limit = parseInt(args[++i], 10);
@@ -154,8 +168,12 @@ Options for 'compare':
   --input-file-type <type>         Type of input file: 'generic' or 'restfox' (default: generic)
   --reference-base-url <url>       Base URL for the reference/current API (optional if set in input file configuration)
   --target-base-url <url>          Base URL for the target/next API (optional if set in input file configuration)
+  --reference-name <name>          Display name for the reference/current API in the report
+  --target-name <name>             Display name for the target/next API in the report
   --reference-headers <headers>    Headers to add to all reference requests (format: "Header1: value1, Header2: value2")
   --target-headers <headers>       Headers to add to all target requests (format: "Header1: value1, Header2: value2")
+  --from <number>                  Start executing from request number N (1-based)
+  --start-at <number>              Alias for --from
   --limit <number>                 Limit the number of URLs to compare
   --output-file <file>             Output filename for reports (without extension)
   --output-dir <dir>               Output directory for reports (default: current directory)
@@ -179,6 +197,9 @@ Examples:
     --input-file Restfox_2025-11-11.json \\
     --reference-base-url https://api-current.example.com \\
     --target-base-url https://api-next.example.com \\
+    --reference-name "main" \\
+    --target-name "release-1.2" \\
+    --from 95 \\
     --limit 10
 
   # Compare with custom headers

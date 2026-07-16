@@ -1,6 +1,6 @@
 import equal from "fast-deep-equal";
 import { diffLines } from "diff";
-import type { ApiResponse, Difference, DiffLine, DiffBlock, GenericRequest } from "./types";
+import type { ApiResponse, Difference, DiffLine, DiffBlock, GenericRequest, SentRequest } from "./types";
 import { replaceBaseUrl, replaceHeaderPlaceholders, replaceVariables, replaceVariablesInBody } from "./parser";
 
 /**
@@ -110,27 +110,35 @@ export async function makeRequest(
     headers[key] = replaceVariables(value, variables);
   }
   
+  // Prepare request body if present
+  let requestBody: string | undefined;
+  const bodyToSend = replaceVariablesInBody(request.body, variables);
+
+  if (bodyToSend) {
+    // If body is already a string, use it as-is
+    // If body is an object, stringify it and set Content-Type header
+    if (typeof bodyToSend === 'string') {
+      requestBody = bodyToSend;
+    } else {
+      requestBody = JSON.stringify(bodyToSend);
+      // Set Content-Type header if not already present
+      if (!headers['Content-Type'] && !headers['content-type']) {
+        headers['Content-Type'] = 'application/json';
+      }
+    }
+  }
+
+  // Snapshot after serialization so it matches the wire exactly
+  const sentRequest: SentRequest = {
+    url,
+    method,
+    headers: { ...headers },
+    body: requestBody,
+  };
+
   const startTime = performance.now();
 
   try {
-    // Prepare request body if present
-    let requestBody: string | undefined;
-    let bodyToSend = replaceVariablesInBody(request.body, variables);
-    
-    if (bodyToSend) {
-      // If body is already a string, use it as-is
-      // If body is an object, stringify it and set Content-Type header
-      if (typeof bodyToSend === 'string') {
-        requestBody = bodyToSend;
-      } else {
-        requestBody = JSON.stringify(bodyToSend);
-        // Set Content-Type header if not already present
-        if (!headers['Content-Type'] && !headers['content-type']) {
-          headers['Content-Type'] = 'application/json';
-        }
-      }
-    }
-
     const response = await fetch(url, {
       method,
       headers,
@@ -160,6 +168,7 @@ export async function makeRequest(
       statusText: response.statusText || getStatusText(response.status),
       body: responseBody,
       duration,
+      request: sentRequest,
     };
   } catch (error) {
     const duration = performance.now() - startTime;
@@ -169,6 +178,7 @@ export async function makeRequest(
       body: null,
       duration,
       error: error instanceof Error ? error.message : String(error),
+      request: sentRequest,
     };
   }
 }
